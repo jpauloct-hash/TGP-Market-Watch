@@ -1,4 +1,4 @@
-const CACHE = "tgp-market-watch-v2";
+const CACHE = "tgp-market-watch-v3";
 const ASSETS = [
   "./index.html",
   "./manifest.json",
