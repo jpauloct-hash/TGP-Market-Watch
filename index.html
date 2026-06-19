@@ -166,6 +166,14 @@
     transition: all 0.15s; font-size: 13px; color: #fff; }
   .mkt-item.on .sw { background: var(--accent); border-color: var(--accent); }
   .mkt-item .nm { font-size: 14.5px; font-weight: 600; }
+  .mkt-item .idx { font-size: 12px; font-weight: 500; color: var(--txt-dim); }
+  .seg { display: flex; gap: 8px; }
+  .seg-btn {
+    flex: 1; padding: 11px; border-radius: 11px; border: 1px solid var(--card-line);
+    background: var(--card); color: var(--txt-dim); font-size: 14px; font-weight: 600;
+    font-family: inherit; cursor: pointer; transition: all 0.15s;
+  }
+  .seg-btn.active { background: var(--accent); color: #04130d; border-color: var(--accent); }
   .mkt-item .hrs { font-size: 11.5px; color: var(--txt-dim); margin-left: auto; font-variant-numeric: tabular-nums; }
   .done-btn { width: 100%; padding: 14px; border-radius: 13px; border: none; margin-top: 8px;
     background: var(--accent); color: #04130d; font-size: 15px; font-weight: 700; cursor: pointer; }
@@ -218,6 +226,13 @@
       <select id="tz-select"></select>
     </div>
     <div class="field">
+      <label>Exibir nos arcos</label>
+      <div class="seg" id="label-seg">
+        <button class="seg-btn" data-mode="city">Cidade</button>
+        <button class="seg-btn" data-mode="index">Índice</button>
+      </div>
+    </div>
+    <div class="field">
       <label>Mercados</label>
       <div class="mkt-list" id="mkt-list"></div>
     </div>
@@ -228,26 +243,27 @@ const SVGNS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("clock");
 const CX=200,CY=200,ARC_W=13;
 const ALL_MARKETS=[
-  {id:"sydney",name:"SYDNEY",open:23,close:6},
-  {id:"tokyo",name:"T\u00d3QUIO",open:0,close:6},
-  {id:"shanghai",name:"XANGAI",open:1.5,close:7},
-  {id:"hongkong",name:"HONG KONG",open:1.5,close:8},
-  {id:"singapore",name:"CINGAPURA",open:1,close:9},
-  {id:"mumbai",name:"MUMBAI",open:3.75,close:10},
-  {id:"dubai",name:"DUBAI",open:6,close:10},
-  {id:"moscow",name:"MOSCOU",open:7,close:15.5},
-  {id:"johannes",name:"JOANESBURGO",open:7,close:15},
-  {id:"frankfurt",name:"FRANKFURT",open:7,close:15.5},
-  {id:"zurich",name:"ZURIQUE",open:7,close:15.5},
-  {id:"london",name:"LONDRES",open:8,close:16.5},
-  {id:"saopaulo",name:"S\u00c3O PAULO",open:13,close:20},
-  {id:"newyork",name:"NOVA YORK",open:14.5,close:21},
-  {id:"toronto",name:"TORONTO",open:14.5,close:21},
-  {id:"chicago",name:"CHICAGO",open:14.5,close:21},
+  {id:"sydney",name:"SYDNEY",index:"ASX 200",open:23,close:6},
+  {id:"tokyo",name:"T\u00d3QUIO",index:"NIKKEI",open:0,close:6},
+  {id:"shanghai",name:"XANGAI",index:"SSE COMP",open:1.5,close:7},
+  {id:"hongkong",name:"HONG KONG",index:"HANG SENG",open:1.5,close:8},
+  {id:"singapore",name:"CINGAPURA",index:"STI",open:1,close:9},
+  {id:"mumbai",name:"MUMBAI",index:"SENSEX",open:3.75,close:10},
+  {id:"dubai",name:"DUBAI",index:"DFM",open:6,close:10},
+  {id:"moscow",name:"MOSCOU",index:"MOEX",open:7,close:15.5},
+  {id:"johannes",name:"JOANESBURGO",index:"JSE 40",open:7,close:15},
+  {id:"frankfurt",name:"FRANKFURT",index:"DAX",open:7,close:15.5},
+  {id:"zurich",name:"ZURIQUE",index:"SMI",open:7,close:15.5},
+  {id:"london",name:"LONDRES",index:"FTSE 100",open:8,close:16.5},
+  {id:"saopaulo",name:"S\u00c3O PAULO",index:"IBOVESPA",open:13,close:20},
+  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",open:14.5,close:21},
+  {id:"toronto",name:"TORONTO",index:"TSX",open:14.5,close:21},
+  {id:"chicago",name:"CHICAGO",index:"S&P 500",open:14.5,close:21},
 ];
-const DEFAULT_ON=["sydney","tokyo","frankfurt","london","newyork"];
+const DEFAULT_ON=["saopaulo","tokyo","newyork","london","frankfurt","shanghai","hongkong"];
 const TZ_OPTIONS=[]; for(let o=-12;o<=14;o++) TZ_OPTIONS.push(o);
-let state={ tzOffset:-new Date().getTimezoneOffset()/60, selected:new Set(DEFAULT_ON) };
+let state={ tzOffset:-new Date().getTimezoneOffset()/60, selected:new Set(DEFAULT_ON), labelMode:"index" };
+function mlabel(m){ return state.labelMode==="index" ? m.index : m.name; }
 
 function hourToAngle(h){ return (h/24)*360-90; }
 function polar(cx,cy,r,a){ const rad=a*Math.PI/180; return {x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)}; }
@@ -293,7 +309,7 @@ function rebuild(){
     const rot=(ang+90>90&&ang+90<270)?ang-90:ang+90;
     const txt=el("text",{x:lp.x,y:lp.y,"text-anchor":"middle","dominant-baseline":"central",
       class:"arc-label",id:"lbl-"+m.id,transform:`rotate(${rot} ${lp.x} ${lp.y})`});
-    txt.textContent=m.name; svg.appendChild(txt);
+    txt.textContent=mlabel(m); svg.appendChild(txt);
   });
   hourHand=el("line",{x1:CX,y1:CY,x2:CX,y2:CY-66,stroke:"var(--hand)","stroke-width":5,"stroke-linecap":"round"});
   secondHand=el("line",{x1:CX,y1:CY+22,x2:CX,y2:CY-150,stroke:"var(--second)","stroke-width":1.3,"stroke-linecap":"round"});
@@ -315,7 +331,7 @@ function update(){
     if(!arc)return;
     if(isOpenUTC(m,utcH)){ arc.setAttribute("stroke","var(--accent)");
       arc.style.filter="drop-shadow(0 0 5px var(--open-glow))"; lbl.classList.add("open");
-      anyOpen=true; openNames.push(m.name);
+      anyOpen=true; openNames.push(mlabel(m));
     } else { arc.setAttribute("stroke","var(--ring-off)"); arc.style.filter="none"; lbl.classList.remove("open"); }
   });
   let next=null,best=999;
@@ -325,7 +341,7 @@ function update(){
   document.getElementById("utc-foot").textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
   const nextLabel=document.getElementById("next-label");
   if(next){ const hh=Math.floor(best),mm=Math.round((best-hh)*60);
-    nextLabel.textContent=`${next.name} abre em ${hh}h${pad(mm)}`;
+    nextLabel.textContent=`${mlabel(next)} abre em ${hh}h${pad(mm)}`;
   } else if(sel.length){ nextLabel.textContent="todos abertos"; }
   else { nextLabel.textContent="nenhum mercado"; }
   const status=document.getElementById("status"),statusText=document.getElementById("status-text");
@@ -352,7 +368,7 @@ function buildSettings(){
     item.className="mkt-item"+(state.selected.has(m.id)?" on":"");
     const oh=Math.floor(m.open),om=Math.round((m.open-oh)*60),ch=Math.floor(m.close),cm=Math.round((m.close-ch)*60);
     item.innerHTML=`<div class="sw">${state.selected.has(m.id)?"\u2713":""}</div>
-      <div class="nm">${m.name}</div>
+      <div class="nm">${m.name}<span class="idx"> \u00b7 ${m.index}</span></div>
       <div class="hrs">${pad(oh)}:${pad(om)}\u2013${pad(ch)}:${pad(cm)} UTC</div>`;
     item.addEventListener("click",()=>{
       if(state.selected.has(m.id)){ if(state.selected.size<=1)return;
@@ -362,6 +378,15 @@ function buildSettings(){
     });
     list.appendChild(item);
   });
+
+  // seletor cidade / índice
+  const seg=document.getElementById("label-seg");
+  const segBtns=seg.querySelectorAll(".seg-btn");
+  function syncSeg(){ segBtns.forEach(b=>b.classList.toggle("active", b.dataset.mode===state.labelMode)); }
+  segBtns.forEach(b=>b.addEventListener("click",()=>{
+    state.labelMode=b.dataset.mode; syncSeg(); rebuild(); refreshTzLabels();
+  }));
+  syncSeg();
 }
 // ---- Matrix digital rain ----
 const rain=document.getElementById("rain");
