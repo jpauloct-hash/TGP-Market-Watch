@@ -93,7 +93,7 @@
   :root.matrix #rain { opacity: 1; }
   :root.matrix { background: #000 !important; }
   :root.matrix body { background: transparent !important; }
-  body > *:not(#rain) { position: relative; z-index: 1; }
+  body > *:not(#rain):not(#sheet):not(#overlay) { position: relative; z-index: 1; }
   .brand {
     width: min(92vw, 440px); display: flex; align-items: baseline; gap: 8px;
     padding: 0 4px 2px; user-select: none;
