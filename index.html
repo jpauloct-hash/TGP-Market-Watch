@@ -441,10 +441,9 @@ const THEMES=[
   {cls:"light", label:"\u25D1 Claro"},
   {cls:"matrix",label:"\u25A0 Matrix"},
 ];
-let themeIdx=2;
+let themeIdx=0;
 const toggleBtn=document.getElementById("toggle");
 toggleBtn.textContent=THEMES[themeIdx].label;
-document.documentElement.classList.add("matrix");
 toggleBtn.addEventListener("click",()=>{
   themeIdx=(themeIdx+1)%THEMES.length;
   document.documentElement.classList.remove("light","matrix");
@@ -453,7 +452,7 @@ toggleBtn.addEventListener("click",()=>{
   toggleBtn.textContent=t.label;
   if(t.cls==="matrix") startRain(); else stopRain();
 });
-buildSettings(); rebuild(); refreshTzLabels(); update(); startRain();
+buildSettings(); rebuild(); refreshTzLabels(); update();
 </script>
 </body>
 </html>
