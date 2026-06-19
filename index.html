@@ -272,6 +272,15 @@ function arcPath(cx,cy,r,startH,endH){
   const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1);
   return `M ${p0.x} ${p0.y} A ${r} ${r} 0 ${span>12?1:0} 1 ${p1.x} ${p1.y}`;
 }
+// caminho do mesmo arco, porém percorrido no sentido anti-horário (do fim ao início).
+// usado só para o texto-guia dos rótulos da metade inferior, para o texto ficar
+// em posição normal de leitura (não de cabeça para baixo).
+function arcPathReverse(cx,cy,r,startH,endH){
+  let span=endH-startH; if(span<=0) span+=24;
+  const a0=hourToAngle(startH),a1=hourToAngle(startH+span);
+  const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1);
+  return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${span>12?1:0} 0 ${p0.x} ${p0.y}`;
+}
 function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag);
   for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
 function toLocal(utcH){ return ((utcH+state.tzOffset)%24+24)%24; }
@@ -309,16 +318,20 @@ function rebuild(){
     // ângulo do meio do arco decide se estamos na metade de cima ou de baixo
     const midAng=(hourToAngle((lo+span/2)%24)+360)%360;
     const bottom = midAng>0 && midAng<180; // metade inferior do círculo
-    // o caminho-guia é SEMPRE o mesmo do arco (mesmo raio, mesmo sentido).
-    // na metade de baixo, usamos side="right" para o texto correr do lado
-    // de dentro da curva e ficar legível, sem inverter o caminho nem mexer no raio.
+    // metade de cima: caminho normal, texto começa no início do arco.
+    // metade de baixo: caminho reverso (anti-horário) e texto centralizado,
+    // para o nome ficar em posição normal de leitura, dentro do arco.
     const pid="lblpath-"+m.id;
-    const lpath=el("path",{id:pid,d:arcPath(CX,CY,radius,lo,lc),fill:"none",stroke:"none"});
+    const labelPathD = bottom
+      ? arcPathReverse(CX,CY,radius,lo,lc)
+      : arcPath(CX,CY,radius,lo,lc);
+    const lpath=el("path",{id:pid,d:labelPathD,fill:"none",stroke:"none"});
     svg.appendChild(lpath);
 
     const txt=el("text",{class:"arc-label",id:"lbl-"+m.id});
-    const tp=el("textPath",{href:"#"+pid,startOffset:"4%","text-anchor":"start"});
-    if(bottom) tp.setAttribute("side","right");
+    const tp=el("textPath",{href:"#"+pid,
+      startOffset: bottom ? "50%" : "4%",
+      "text-anchor": bottom ? "middle" : "start"});
     tp.textContent=mlabel(m);
     txt.appendChild(tp);
     svg.appendChild(txt);
