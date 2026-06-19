@@ -205,9 +205,7 @@
   </div>
   <div class="clock-wrap">
     <svg viewBox="0 0 400 400" id="clock"></svg>
-    <div class="center-readout">
-      <div class="next" id="next-label">—</div>
-    </div>
+    <div class="center-readout"></div>
   </div>
   <div class="status" id="status">
     <div class="left"><span class="pulse"></span><span id="status-text">—</span></div>
@@ -311,24 +309,16 @@ function rebuild(){
     // ângulo do meio do arco decide se estamos na metade de cima ou de baixo
     const midAng=(hourToAngle((lo+span/2)%24)+360)%360;
     const bottom = midAng>0 && midAng<180; // metade inferior do círculo
-    let pathD;
-    if(bottom){
-      // na parte de baixo, desenha o path no sentido inverso (do fim ao início)
-      // para o texto não ficar de cabeça para baixo; raio levemente menor
-      // para o texto cair SOBRE o arco (e não pela borda externa)
-      pathD=arcPath(CX,CY,radius-4,lc,lo);
-    } else {
-      pathD=arcPath(CX,CY,radius,lo,lc);
-    }
+    // o caminho-guia é SEMPRE o mesmo do arco (mesmo raio, mesmo sentido).
+    // na metade de baixo, usamos side="right" para o texto correr do lado
+    // de dentro da curva e ficar legível, sem inverter o caminho nem mexer no raio.
     const pid="lblpath-"+m.id;
-    const lpath=el("path",{id:pid,d:pathD,fill:"none",stroke:"none"});
+    const lpath=el("path",{id:pid,d:arcPath(CX,CY,radius,lo,lc),fill:"none",stroke:"none"});
     svg.appendChild(lpath);
 
     const txt=el("text",{class:"arc-label",id:"lbl-"+m.id});
-    const tp=el("textPath",{href:"#"+pid,startOffset:bottom?"100%":"0%",
-      "text-anchor":bottom?"end":"start"});
-    // pequeno respiro para não colar na ponta arredondada do arco
-    tp.setAttribute("startOffset", bottom? "96%" : "4%");
+    const tp=el("textPath",{href:"#"+pid,startOffset:"4%","text-anchor":"start"});
+    if(bottom) tp.setAttribute("side","right");
     tp.textContent=mlabel(m);
     txt.appendChild(tp);
     svg.appendChild(txt);
@@ -356,8 +346,6 @@ function update(){
       anyOpen=true; openNames.push(mlabel(m));
     } else { arc.setAttribute("stroke","var(--ring-off)"); arc.style.filter="none"; lbl.classList.remove("open"); }
   });
-  let next=null,best=999;
-  sel.forEach(m=>{ if(isOpenUTC(m,utcH))return; let d=(m.open-utcH+24)%24; if(d<best){best=d;next=m;} });
   const pad=n=>String(n).padStart(2,"0");
   // destaca o número da hora vigente no anel
   const curHourNum=Math.floor(localH)===0?24:Math.floor(localH);
@@ -366,11 +354,6 @@ function update(){
     if(node) node.classList.toggle("now", hh===curHourNum);
   }
   document.getElementById("utc-foot").textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
-  const nextLabel=document.getElementById("next-label");
-  if(next){ const hh=Math.floor(best),mm=Math.round((best-hh)*60);
-    nextLabel.textContent=`${mlabel(next)} abre em ${hh}h${pad(mm)}`;
-  } else if(sel.length){ nextLabel.textContent="todos abertos"; }
-  else { nextLabel.textContent="nenhum mercado"; }
   const status=document.getElementById("status"),statusText=document.getElementById("status-text");
   if(anyOpen){ status.classList.remove("closed");
     statusText.textContent=openNames.length>1?`Aberto \u00b7 ${openNames.length} mercados`:`Aberto \u00b7 ${openNames[0]}`;
