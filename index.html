@@ -314,8 +314,9 @@ function rebuild(){
     let pathD;
     if(bottom){
       // na parte de baixo, desenha o path no sentido inverso (do fim ao início)
-      // para o texto não ficar de cabeça para baixo
-      pathD=arcPath(CX,CY,radius,lc,lo);
+      // para o texto não ficar de cabeça para baixo; raio levemente menor
+      // para o texto cair SOBRE o arco (e não pela borda externa)
+      pathD=arcPath(CX,CY,radius-4,lc,lo);
     } else {
       pathD=arcPath(CX,CY,radius,lo,lc);
     }
