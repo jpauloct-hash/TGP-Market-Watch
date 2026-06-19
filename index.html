@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TGP Market Watch</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9IiMwMDAwMDAiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNzAiIGZpbGw9IiMwMjBhMDQiIHN0cm9rZT0iIzBkM2QxOCIgc3Ryb2tlLXdpZHRoPSIxMCIvPgo8cGF0aCBkPSJNIDI1NiA5NiBBIDE2MCAxNjAgMCAwIDEgNDE2IDI1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzlmZjE0IiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTSAyNTYgNDE2IEEgMTYwIDE2MCAwIDAgMSAxMjAgMzM2IiBmaWxsPSJub25lIiBzdHJva2U9IiMwZDNkMTgiIHN0cm9rZS13aWR0aD0iMjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8bGluZSB4MT0iMjU2IiB5MT0iMjU2IiB4Mj0iMjU2IiB5Mj0iMTUwIiBzdHJva2U9IiM1YmZmOTUiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8bGluZSB4MT0iMjU2IiB5MT0iMjU2IiB4Mj0iMzMwIiB5Mj0iMzAwIiBzdHJva2U9IiM1YmZmOTUiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE0IiBmaWxsPSIjMzlmZjE0Ii8+Cjx0ZXh0IHg9IjI1NiIgeT0iMzcyIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjU4IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjMzlmZjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UR1A8L3RleHQ+Cjwvc3ZnPg==">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9IiMwMDAwMDAiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNzAiIGZpbGw9IiMwMjBhMDQiIHN0cm9rZT0iIzBkM2QxOCIgc3Ryb2tlLXdpZHRoPSIxMCIvPgo8cGF0aCBkPSJNIDI1NiA5NiBBIDE2MCAxNjAgMCAwIDEgNDE2IDI1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzlmZjE0IiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTSAyNTYgNDE2IEEgMTYwIDE2MCAwIDAgMSAxMjAgMzM2IiBmaWxsPSJub25lIiBzdHJva2U9IiMwZDNkMTgiIHN0cm9rZS13aWR0aD0iMjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8bGluZSB4MT0iMjU2IiB5MT0iMjU2IiB4Mj0iMjU2IiB5Mj0iMTUwIiBzdHJva2U9IiM1YmZmOTUiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8bGluZSB4MT0iMjU2IiB5MT0iMjU2IiB4Mj0iMzMwIiB5Mj0iMzAwIiBzdHJva2U9IiM1YmZmOTUiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE0IiBmaWxsPSIjMzlmZjE0Ii8+Cjx0ZXh0IHg9IjI1NiIgeT0iMzcyIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjU4IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjMzlmZjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UR1A8L3RleHQ+Cjwvc3ZnPg==">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TGP Market Watch">
+<meta name="theme-color" content="#000000">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --ring-bg: #141a24;
+    --ring-track: #161d27;
+    --ring-off: #3a4656;
+    --face: #0f141c;
+    --txt: #e8edf4;
+    --txt-dim: #6b7888;
+    --hour-num: #c4cdd9;
+    --tick: #2a3543;
+    --tick-major: #4a5868;
+    --hand: #f2f5fa;
+    --second: #ff4d4d;
+    --center: #ff4d4d;
+    --accent: #2ee6a0;
+    --open-glow: rgba(46,230,160,0.35);
+    --card: rgba(255,255,255,0.04);
+    --card-line: rgba(255,255,255,0.08);
+    --panel: #121822;
+  }
+  :root.light {
+    --bg: #eef1f5;
+    --ring-bg: #f7f9fb;
+    --ring-track: #e4e8ee;
+    --ring-off: #aab4c2;
+    --face: #ffffff;
+    --txt: #1a2230;
+    --txt-dim: #8a95a5;
+    --hour-num: #2a3340;
+    --tick: #c4ccd6;
+    --tick-major: #98a3b2;
+    --hand: #1a2230;
+    --second: #e23b3b;
+    --center: #e23b3b;
+    --accent: #16b97f;
+    --open-glow: rgba(22,185,127,0.25);
+    --card: rgba(0,0,0,0.03);
+    --card-line: rgba(0,0,0,0.08);
+    --panel: #ffffff;
+  }
+  :root.matrix {
+    --bg: #000000;
+    --ring-bg: #020a04;
+    --ring-track: #051206;
+    --ring-off: #0d3d18;
+    --face: #010402;
+    --txt: #28ff70;
+    --txt-dim: #1a8a3f;
+    --hour-num: #2eff7a;
+    --tick: #0d3d18;
+    --tick-major: #1f9c4a;
+    --hand: #5bff95;
+    --second: #aaffbf;
+    --center: #5bff95;
+    --accent: #39ff14;
+    --open-glow: rgba(57,255,20,0.55);
+    --card: rgba(20,80,30,0.12);
+    --card-line: rgba(57,255,20,0.22);
+    --panel: #020a04;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--txt);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+  body {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100dvh; padding: calc(env(safe-area-inset-top) + 4vh) 16px calc(env(safe-area-inset-bottom) + 8vh); gap: 14px;
+    position: relative;
+  }
+  #rain {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    z-index: 0; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+  }
+  :root.matrix #rain { opacity: 1; }
+  :root.matrix { background: #000 !important; }
+  :root.matrix body { background: transparent !important; }
+  body > *:not(#rain) { position: relative; z-index: 1; }
+  .brand {
+    width: min(92vw, 440px); display: flex; align-items: baseline; gap: 8px;
+    padding: 0 4px 2px; user-select: none;
+  }
+  .brand-mark {
+    font-size: 19px; font-weight: 800; letter-spacing: 0.02em; color: var(--accent);
+  }
+  .brand-name {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.34em; color: var(--txt-dim);
+  }
+  :root.matrix .brand-mark { text-shadow: 0 0 9px var(--open-glow); }
+  .ticker {
+    width: min(92vw, 440px); background: var(--card); border: 1px solid var(--card-line);
+    border-radius: 14px; padding: 11px 15px; font-size: 12.5px; line-height: 1.4;
+    display: flex; align-items: flex-start; gap: 9px;
+  }
+  .ticker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    margin-top: 4px; flex-shrink: 0; box-shadow: 0 0 8px var(--accent); }
+  .ticker .lbl { color: var(--txt-dim); font-weight: 600; }
+  .clock-wrap { width: min(92vw, 440px); aspect-ratio: 1; position: relative; }
+  svg { width: 100%; height: 100%; display: block; }
+  .center-readout { position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+  .center-readout .next { font-size: 10.5px; color: var(--txt-dim); letter-spacing: 0.05em;
+    text-transform: uppercase; margin-bottom: 3px; max-width: 130px; }
+  .center-readout .time { font-size: 30px; font-weight: 300; color: var(--accent);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  .center-readout .tz { font-size: 10px; color: var(--txt-dim); letter-spacing: 0.1em; margin-top: 2px; }
+  .status { width: min(92vw, 440px); display: flex; align-items: center;
+    justify-content: space-between; font-size: 14.5px; }
+  .status .left { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .status .pulse { width: 11px; height: 11px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 0 var(--open-glow); animation: pulse 2.4s infinite; }
+  .status.closed .pulse { background: var(--txt-dim); animation: none; box-shadow: none; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 var(--open-glow); }
+    70% { box-shadow: 0 0 0 12px rgba(0,0,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  }
+  .status .clock-utc { color: var(--txt-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.03em; }
+  .controls { display: flex; gap: 10px; width: min(92vw, 440px); }
+  .btn { flex: 1; padding: 11px; border-radius: 12px; border: 1px solid var(--card-line);
+    background: var(--card); color: var(--txt); font-size: 13.5px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: background 0.2s, transform 0.1s; }
+  .btn:active { transform: scale(0.97); }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 50; }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .sheet { position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel);
+    border-radius: 20px 20px 0 0; padding: 22px 20px calc(env(safe-area-inset-bottom) + 24px);
+    transform: translateY(100%); transition: transform 0.32s cubic-bezier(.3,.8,.3,1);
+    z-index: 51; max-height: 82dvh; overflow-y: auto; max-width: 480px; margin: 0 auto; }
+  .sheet.show { transform: translateY(0); }
+  .sheet h2 { font-size: 17px; margin-bottom: 4px; }
+  .sheet .sub { font-size: 12.5px; color: var(--txt-dim); margin-bottom: 18px; }
+  .sheet .grip { width: 38px; height: 4px; border-radius: 2px; background: var(--card-line); margin: 0 auto 16px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--txt-dim); margin-bottom: 8px; }
+  select { width: 100%; padding: 12px 14px; border-radius: 11px; border: 1px solid var(--card-line);
+    background: var(--card); color: var(--txt); font-size: 14.5px; font-family: inherit;
+    appearance: none; -webkit-appearance: none; }
+  .mkt-list { display: flex; flex-direction: column; gap: 2px; }
+  .mkt-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+    border-radius: 11px; cursor: pointer; transition: background 0.15s; }
+  .mkt-item:active { background: var(--card); }
+  .mkt-item .sw { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--card-line);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; font-size: 13px; color: #fff; }
+  .mkt-item.on .sw { background: var(--accent); border-color: var(--accent); }
+  .mkt-item .nm { font-size: 14.5px; font-weight: 600; }
+  .mkt-item .hrs { font-size: 11.5px; color: var(--txt-dim); margin-left: auto; font-variant-numeric: tabular-nums; }
+  .done-btn { width: 100%; padding: 14px; border-radius: 13px; border: none; margin-top: 8px;
+    background: var(--accent); color: #04130d; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .arc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; fill: #0a0e14; }
+  :root.light .arc-label { fill: #ffffff; }
+  .arc-label.open { fill: #fff; }
+  .hour-num { font-size: 14px; font-weight: 500; fill: var(--hour-num); font-variant-numeric: tabular-nums; }
+  :root.matrix { font-family: "SF Mono", "Cascadia Code", "Consolas", ui-monospace, monospace; }
+  :root.matrix .center-readout .time,
+  :root.matrix #status-text,
+  :root.matrix .ticker { text-shadow: 0 0 7px var(--open-glow); }
+  :root.matrix .arc-label { fill: #000; }
+  :root.matrix .arc-label.open { fill: #001a06; }
+  :root.matrix .hour-num.cardinal { fill: var(--accent); }
+  .hour-num.cardinal { font-weight: 700; }
+</style>
+</head>
+<body>
+  <canvas id="rain"></canvas>
+  <div class="brand">
+    <span class="brand-mark">TGP</span><span class="brand-name">MARKET WATCH</span>
+  </div>
+  <div class="ticker">
+    <span class="dot"></span>
+    <span><span class="lbl">FUSO ·</span> <span id="event-text">—</span></span>
+  </div>
+  <div class="clock-wrap">
+    <svg viewBox="0 0 400 400" id="clock"></svg>
+    <div class="center-readout">
+      <div class="next" id="next-label">—</div>
+      <div class="time" id="local-big">00:00</div>
+      <div class="tz" id="tz-label">GMT</div>
+    </div>
+  </div>
+  <div class="status" id="status">
+    <div class="left"><span class="pulse"></span><span id="status-text">—</span></div>
+    <div class="clock-utc"><span id="utc-foot">00:00</span> UTC</div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="open-settings">&#9881; Ajustes</button>
+    <button class="btn" id="toggle">&#9680; Tema</button>
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <div class="sheet" id="sheet">
+    <div class="grip"></div>
+    <h2>Ajustes</h2>
+    <div class="sub">Escolha seu fuso e os mercados que quer acompanhar.</div>
+    <div class="field">
+      <label>Seu fuso horário</label>
+      <select id="tz-select"></select>
+    </div>
+    <div class="field">
+      <label>Mercados</label>
+      <div class="mkt-list" id="mkt-list"></div>
+    </div>
+    <button class="done-btn" id="done-btn">Pronto</button>
+  </div>
+<script>
+const SVGNS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("clock");
+const CX=200,CY=200,ARC_W=13;
+const ALL_MARKETS=[
+  {id:"sydney",name:"SYDNEY",open:23,close:6},
+  {id:"tokyo",name:"T\u00d3QUIO",open:0,close:6},
+  {id:"shanghai",name:"XANGAI",open:1.5,close:7},
+  {id:"hongkong",name:"HONG KONG",open:1.5,close:8},
+  {id:"singapore",name:"CINGAPURA",open:1,close:9},
+  {id:"mumbai",name:"MUMBAI",open:3.75,close:10},
+  {id:"dubai",name:"DUBAI",open:6,close:10},
+  {id:"moscow",name:"MOSCOU",open:7,close:15.5},
+  {id:"johannes",name:"JOANESBURGO",open:7,close:15},
+  {id:"frankfurt",name:"FRANKFURT",open:7,close:15.5},
+  {id:"zurich",name:"ZURIQUE",open:7,close:15.5},
+  {id:"london",name:"LONDRES",open:8,close:16.5},
+  {id:"saopaulo",name:"S\u00c3O PAULO",open:13,close:20},
+  {id:"newyork",name:"NOVA YORK",open:14.5,close:21},
+  {id:"toronto",name:"TORONTO",open:14.5,close:21},
+  {id:"chicago",name:"CHICAGO",open:14.5,close:21},
+];
+const DEFAULT_ON=["sydney","tokyo","frankfurt","london","newyork"];
+const TZ_OPTIONS=[]; for(let o=-12;o<=14;o++) TZ_OPTIONS.push(o);
+let state={ tzOffset:-new Date().getTimezoneOffset()/60, selected:new Set(DEFAULT_ON) };
+
+function hourToAngle(h){ return (h/24)*360-90; }
+function polar(cx,cy,r,a){ const rad=a*Math.PI/180; return {x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)}; }
+function arcPath(cx,cy,r,startH,endH){
+  let span=endH-startH; if(span<=0) span+=24;
+  const a0=hourToAngle(startH),a1=hourToAngle(startH+span);
+  const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1);
+  return `M ${p0.x} ${p0.y} A ${r} ${r} 0 ${span>12?1:0} 1 ${p1.x} ${p1.y}`;
+}
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+function toLocal(utcH){ return ((utcH+state.tzOffset)%24+24)%24; }
+function isOpenUTC(m,u){ let o=m.open,c=m.close; if(o<c) return u>=o&&u<c; return u>=o||u<c; }
+
+let hourHand,secondHand;
+function rebuild(){
+  svg.innerHTML="";
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:196,fill:"var(--ring-bg)"}));
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:188,fill:"var(--face)"}));
+  for(let h=1;h<=24;h++){
+    const ang=hourToAngle(h),major=h%6===0;
+    const a=polar(CX,CY,180,ang),b=polar(CX,CY,major?170:175,ang);
+    svg.appendChild(el("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,
+      stroke:major?"var(--tick-major)":"var(--tick)","stroke-width":major?1.6:1}));
+    const np=polar(CX,CY,188,ang);
+    const t=el("text",{x:np.x,y:np.y,"text-anchor":"middle","dominant-baseline":"central",
+      class:"hour-num"+(major?" cardinal":"")});
+    t.textContent=h; svg.appendChild(t);
+  }
+  const sel=ALL_MARKETS.filter(m=>state.selected.has(m.id));
+  const n=sel.length;
+  const rOuter=168,rInner=Math.max(70,168-(n-1)*(n>8?12:16));
+  const step=n>1?(rOuter-rInner)/(n-1):0;
+  sel.forEach((m,i)=>{
+    const radius=n>1?rOuter-i*step:130;
+    const lo=toLocal(m.open),lc=toLocal(m.close);
+    svg.appendChild(el("path",{d:arcPath(CX,CY,radius,0.01,23.99),fill:"none",
+      stroke:"var(--ring-track)","stroke-width":ARC_W,"stroke-linecap":"butt"}));
+    svg.appendChild(el("path",{d:arcPath(CX,CY,radius,lo,lc),fill:"none",
+      "stroke-width":ARC_W,"stroke-linecap":"round",class:"open-arc",id:"arc-"+m.id}));
+    let span=(lc-lo+24)%24,mid=(lo+span/2)%24;
+    const ang=hourToAngle(mid),lp=polar(CX,CY,radius,ang);
+    const rot=(ang+90>90&&ang+90<270)?ang-90:ang+90;
+    const txt=el("text",{x:lp.x,y:lp.y,"text-anchor":"middle","dominant-baseline":"central",
+      class:"arc-label",id:"lbl-"+m.id,transform:`rotate(${rot} ${lp.x} ${lp.y})`});
+    txt.textContent=m.name; svg.appendChild(txt);
+  });
+  hourHand=el("line",{x1:CX,y1:CY,x2:CX,y2:CY-66,stroke:"var(--hand)","stroke-width":5,"stroke-linecap":"round"});
+  secondHand=el("line",{x1:CX,y1:CY+22,x2:CX,y2:CY-150,stroke:"var(--second)","stroke-width":1.3,"stroke-linecap":"round"});
+  svg.appendChild(hourHand); svg.appendChild(secondHand);
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:5.5,fill:"var(--center)"}));
+}
+function update(){
+  const now=new Date();
+  const utcH=now.getUTCHours()+now.getUTCMinutes()/60+now.getUTCSeconds()/3600;
+  const localH=toLocal(utcH);
+  const lh=Math.floor(localH),lm=Math.floor((localH-lh)*60);
+  hourHand.setAttribute("transform",`rotate(${hourToAngle(localH)+90} ${CX} ${CY})`);
+  const s=now.getUTCSeconds()+now.getUTCMilliseconds()/1000;
+  secondHand.setAttribute("transform",`rotate(${s/60*360} ${CX} ${CY})`);
+  let anyOpen=false,openNames=[];
+  const sel=ALL_MARKETS.filter(m=>state.selected.has(m.id));
+  sel.forEach(m=>{
+    const arc=document.getElementById("arc-"+m.id),lbl=document.getElementById("lbl-"+m.id);
+    if(!arc)return;
+    if(isOpenUTC(m,utcH)){ arc.setAttribute("stroke","var(--accent)");
+      arc.style.filter="drop-shadow(0 0 5px var(--open-glow))"; lbl.classList.add("open");
+      anyOpen=true; openNames.push(m.name);
+    } else { arc.setAttribute("stroke","var(--ring-off)"); arc.style.filter="none"; lbl.classList.remove("open"); }
+  });
+  let next=null,best=999;
+  sel.forEach(m=>{ if(isOpenUTC(m,utcH))return; let d=(m.open-utcH+24)%24; if(d<best){best=d;next=m;} });
+  const pad=n=>String(n).padStart(2,"0");
+  document.getElementById("local-big").textContent=`${pad(lh)}:${pad(lm)}`;
+  document.getElementById("utc-foot").textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
+  const nextLabel=document.getElementById("next-label");
+  if(next){ const hh=Math.floor(best),mm=Math.round((best-hh)*60);
+    nextLabel.textContent=`${next.name} abre em ${hh}h${pad(mm)}`;
+  } else if(sel.length){ nextLabel.textContent="todos abertos"; }
+  else { nextLabel.textContent="nenhum mercado"; }
+  const status=document.getElementById("status"),statusText=document.getElementById("status-text");
+  if(anyOpen){ status.classList.remove("closed");
+    statusText.textContent=openNames.length>1?`Aberto \u00b7 ${openNames.length} mercados`:`Aberto \u00b7 ${openNames[0]}`;
+  } else { status.classList.add("closed"); statusText.textContent="Mercados fechados"; }
+  requestAnimationFrame(update);
+}
+function tzName(off){ const sign=off>=0?"+":"-",a=Math.abs(off),h=Math.floor(a),m=Math.round((a-h)*60);
+  return `GMT${sign}${h}${m?":"+String(m).padStart(2,"0"):""}`; }
+function refreshTzLabels(){
+  document.getElementById("tz-label").textContent=tzName(state.tzOffset);
+  document.getElementById("event-text").textContent=`Seu fuso: ${tzName(state.tzOffset)} \u00b7 ${state.selected.size} mercados`;
+}
+function buildSettings(){
+  const sel=document.getElementById("tz-select");
+  TZ_OPTIONS.forEach(o=>{ const opt=document.createElement("option");
+    opt.value=o; opt.textContent=tzName(o);
+    if(Math.abs(o-state.tzOffset)<0.01) opt.selected=true; sel.appendChild(opt); });
+  sel.addEventListener("change",e=>{ state.tzOffset=parseFloat(e.target.value); rebuild(); refreshTzLabels(); });
+  const list=document.getElementById("mkt-list"),pad=n=>String(n).padStart(2,"0");
+  ALL_MARKETS.forEach(m=>{
+    const item=document.createElement("div");
+    item.className="mkt-item"+(state.selected.has(m.id)?" on":"");
+    const oh=Math.floor(m.open),om=Math.round((m.open-oh)*60),ch=Math.floor(m.close),cm=Math.round((m.close-ch)*60);
+    item.innerHTML=`<div class="sw">${state.selected.has(m.id)?"\u2713":""}</div>
+      <div class="nm">${m.name}</div>
+      <div class="hrs">${pad(oh)}:${pad(om)}\u2013${pad(ch)}:${pad(cm)} UTC</div>`;
+    item.addEventListener("click",()=>{
+      if(state.selected.has(m.id)){ if(state.selected.size<=1)return;
+        state.selected.delete(m.id); item.classList.remove("on"); item.querySelector(".sw").textContent="";
+      } else { state.selected.add(m.id); item.classList.add("on"); item.querySelector(".sw").textContent="\u2713"; }
+      rebuild(); refreshTzLabels();
+    });
+    list.appendChild(item);
+  });
+}
+// ---- Matrix digital rain ----
+const rain=document.getElementById("rain");
+const rctx=rain.getContext("2d");
+const GLYPHS="01ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ｜ﾁｺ$+*<>".split("");
+let cols=[], colW=14, running=false, rafRain;
+function sizeRain(){
+  rain.width=window.innerWidth; rain.height=window.innerHeight;
+  const n=Math.floor(rain.width/colW);
+  cols=Array.from({length:n},()=>Math.random()*-rain.height);
+}
+let lastStep=0;
+const RAIN_STEP_MS=115; // intervalo entre quedas — maior = mais lenta
+function drawRain(ts){
+  if(!lastStep) lastStep=ts||0;
+  const advance=(ts-lastStep)>=RAIN_STEP_MS;
+  if(advance){
+    lastStep=ts;
+    rctx.fillStyle="rgba(0,0,0,0.10)";
+    rctx.fillRect(0,0,rain.width,rain.height);
+    rctx.font=colW+"px monospace";
+    for(let i=0;i<cols.length;i++){
+      const ch=GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+      const x=i*colW, y=cols[i];
+      rctx.fillStyle="#39ff14";
+      rctx.fillText(ch,x,y);
+      rctx.fillStyle="rgba(57,255,20,0.35)";
+      rctx.fillText(GLYPHS[Math.floor(Math.random()*GLYPHS.length)],x,y-colW*1.5);
+      if(y>rain.height && Math.random()>0.975) cols[i]=0;
+      else cols[i]=y+colW;
+    }
+  }
+  rafRain=requestAnimationFrame(drawRain);
+}
+function startRain(){ if(running)return; running=true; lastStep=0; sizeRain();
+  rctx.fillStyle="#000"; rctx.fillRect(0,0,rain.width,rain.height); requestAnimationFrame(drawRain); }
+function stopRain(){ running=false; cancelAnimationFrame(rafRain); rctx.clearRect(0,0,rain.width,rain.height); }
+window.addEventListener("resize",()=>{ if(running) sizeRain(); });
+
+
+function openSheet(){ overlay.classList.add("show"); sheet.classList.add("show"); }
+function closeSheet(){ overlay.classList.remove("show"); sheet.classList.remove("show"); }
+document.getElementById("open-settings").addEventListener("click",openSheet);
+document.getElementById("done-btn").addEventListener("click",closeSheet);
+overlay.addEventListener("click",closeSheet);
+const THEMES=[
+  {cls:"",      label:"\u25D0 Escuro"},
+  {cls:"light", label:"\u25D1 Claro"},
+  {cls:"matrix",label:"\u25A0 Matrix"},
+];
+let themeIdx=2;
+const toggleBtn=document.getElementById("toggle");
+toggleBtn.textContent=THEMES[themeIdx].label;
+document.documentElement.classList.add("matrix");
+toggleBtn.addEventListener("click",()=>{
+  themeIdx=(themeIdx+1)%THEMES.length;
+  document.documentElement.classList.remove("light","matrix");
+  const t=THEMES[themeIdx];
+  if(t.cls) document.documentElement.classList.add(t.cls);
+  toggleBtn.textContent=t.label;
+  if(t.cls==="matrix") startRain(); else stopRain();
+});
+buildSettings(); rebuild(); refreshTzLabels(); update(); startRain();
+</script>
+</body>
+</html>
