@@ -189,6 +189,8 @@
   :root.matrix .arc-label.open { fill: #001a06; }
   :root.matrix .hour-num.cardinal { fill: var(--accent); }
   .hour-num.cardinal { font-weight: 700; }
+  .hour-num.now { fill: #ffd23f; font-weight: 700; }
+  :root.matrix .hour-num.now { fill: #7dff5a; }
 </style>
 </head>
 <body>
@@ -204,8 +206,6 @@
     <svg viewBox="0 0 400 400" id="clock"></svg>
     <div class="center-readout">
       <div class="next" id="next-label">—</div>
-      <div class="time" id="local-big">00:00</div>
-      <div class="tz" id="tz-label">GMT</div>
     </div>
   </div>
   <div class="status" id="status">
@@ -290,7 +290,7 @@ function rebuild(){
       stroke:major?"var(--tick-major)":"var(--tick)","stroke-width":major?1.6:1}));
     const np=polar(CX,CY,188,ang);
     const t=el("text",{x:np.x,y:np.y,"text-anchor":"middle","dominant-baseline":"central",
-      class:"hour-num"+(major?" cardinal":"")});
+      id:"hn-"+h, class:"hour-num"+(major?" cardinal":"")});
     t.textContent=h; svg.appendChild(t);
   }
   const sel=ALL_MARKETS.filter(m=>state.selected.has(m.id));
@@ -337,7 +337,12 @@ function update(){
   let next=null,best=999;
   sel.forEach(m=>{ if(isOpenUTC(m,utcH))return; let d=(m.open-utcH+24)%24; if(d<best){best=d;next=m;} });
   const pad=n=>String(n).padStart(2,"0");
-  document.getElementById("local-big").textContent=`${pad(lh)}:${pad(lm)}`;
+  // destaca o número da hora vigente no anel
+  const curHourNum=Math.floor(localH)===0?24:Math.floor(localH);
+  for(let hh=1;hh<=24;hh++){
+    const node=document.getElementById("hn-"+hh);
+    if(node) node.classList.toggle("now", hh===curHourNum);
+  }
   document.getElementById("utc-foot").textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
   const nextLabel=document.getElementById("next-label");
   if(next){ const hh=Math.floor(best),mm=Math.round((best-hh)*60);
@@ -353,7 +358,6 @@ function update(){
 function tzName(off){ const sign=off>=0?"+":"-",a=Math.abs(off),h=Math.floor(a),m=Math.round((a-h)*60);
   return `GMT${sign}${h}${m?":"+String(m).padStart(2,"0"):""}`; }
 function refreshTzLabels(){
-  document.getElementById("tz-label").textContent=tzName(state.tzOffset);
   document.getElementById("event-text").textContent=`Seu fuso: ${tzName(state.tzOffset)} \u00b7 ${state.selected.size} mercados`;
 }
 function buildSettings(){
