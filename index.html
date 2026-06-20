@@ -147,11 +147,11 @@
     100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
   }
   .status .clock-utc { color: var(--txt-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.03em; }
-  .controls { display: flex; gap: 10px; width: min(92vw, 440px); }
-  .btn { flex: 1; padding: 11px; border-radius: 12px; border: 1px solid var(--card-line);
-    background: var(--card); color: var(--txt); font-size: 13.5px; font-weight: 600;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
-    transition: background 0.2s, transform 0.1s; }
+  .controls { display: flex; gap: 8px; width: min(94vw, 460px); }
+  .btn { flex: 1; padding: 11px 6px; border-radius: 12px; border: 1px solid var(--card-line);
+    background: var(--card); color: var(--txt); font-size: 12.5px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+    transition: background 0.2s, transform 0.1s; white-space: nowrap; }
   .btn:active { transform: scale(0.97); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5);
     opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 50; }
@@ -164,6 +164,27 @@
   .sheet h2 { font-size: 17px; margin-bottom: 4px; }
   .sheet .sub { font-size: 12.5px; color: var(--txt-dim); margin-bottom: 18px; }
   .sheet .grip { width: 38px; height: 4px; border-radius: 2px; background: var(--card-line); margin: 0 auto 16px; }
+  /* ── Painel de notícias (mesmo padrão visual do sheet) ── */
+  #news-status { font-size: 11.5px; color: var(--txt-dim); margin-bottom: 12px; }
+  #news-list { display: flex; flex-direction: column; gap: 8px; }
+  .news-card { background: var(--card); border: 1px solid var(--card-line); border-left: 2px solid var(--accent);
+    border-radius: 10px; padding: 12px 13px; display: flex; flex-direction: column; }
+  .news-card.macro { border-left-color: var(--mkt-flat); }
+  .news-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; }
+  .news-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px;
+    background: rgba(127,127,127,0.12); color: var(--accent); white-space: nowrap; }
+  .news-card.macro .news-badge { color: var(--mkt-flat); }
+  .news-time { font-size: 9.5px; color: var(--txt-dim); white-space: nowrap; }
+  .news-title { font-size: 12.5px; color: var(--txt); font-weight: 600; line-height: 1.5; margin-bottom: 8px; }
+  .news-expand-btn { align-self: flex-start; background: transparent; border: 1px solid var(--card-line);
+    border-radius: 6px; color: var(--accent); font-size: 10.5px; font-weight: 700; padding: 4px 11px;
+    cursor: pointer; font-family: inherit; transition: background 0.15s; }
+  .news-expand-btn:active { transform: scale(0.97); }
+  .news-summary-box { display: none; background: var(--bg); border: 1px solid var(--card-line);
+    border-radius: 7px; padding: 11px; margin-top: 8px; }
+  .news-summary-box p { font-size: 11.5px; color: var(--txt-dim); line-height: 1.7; margin-bottom: 8px; white-space: pre-line; }
+  .news-summary-box a { font-size: 10.5px; color: var(--accent); font-weight: 700; text-decoration: none; display: block; }
+  .news-empty { padding: 26px 10px; text-align: center; color: var(--txt-dim); font-size: 12.5px; }
   .field { margin-bottom: 20px; }
   .field label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
     text-transform: uppercase; color: var(--txt-dim); margin-bottom: 8px; }
@@ -225,6 +246,7 @@
   </div>
   <div class="controls">
     <button class="btn" id="open-settings">&#9881; Ajustes</button>
+    <button class="btn" id="open-news">&#128240; Notícias</button>
     <button class="btn" id="toggle">&#9680; Tema</button>
   </div>
   <div class="overlay" id="overlay"></div>
@@ -248,6 +270,15 @@
       <div class="mkt-list" id="mkt-list"></div>
     </div>
     <button class="done-btn" id="done-btn">Pronto</button>
+  </div>
+  <div class="overlay" id="news-overlay"></div>
+  <div class="sheet" id="news-sheet">
+    <div class="grip"></div>
+    <h2>Notícias do mercado</h2>
+    <div class="sub">Resumo das principais manchetes financeiras.</div>
+    <div id="news-status"></div>
+    <div id="news-list"></div>
+    <button class="done-btn" id="news-done-btn">Pronto</button>
   </div>
 <script>
 const SVGNS="http://www.w3.org/2000/svg";
@@ -770,6 +801,221 @@ if(_DEBUG_ACTIVE){
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
 }
+
+// ═══════════════════════════════════════════════════════════════════
+//  MÓDULO DE NOTÍCIAS (Fase 1 — sem tape, sem requestAnimationFrame)
+//  Estado e funções com prefixo tgp* para não colidir com o relógio.
+// ═══════════════════════════════════════════════════════════════════
+const TGP_NEWS_REFRESH = 15 * 60 * 1000; // 15 min
+let tgpNewsCache = (function(){
+  try { const n = JSON.parse(localStorage.getItem("tgp_news_cache_v1") || "[]"); return Array.isArray(n)?n:[]; }
+  catch(e){ return []; }
+})();
+let tgpNewsLastFetch = 0;
+let tgpNewsFetching = false;
+
+function tgpSetNewsStatus(msg){
+  const s=document.getElementById("news-status");
+  if(s) s.textContent = msg || "";
+}
+
+function tgpFetchNews(){
+  if(tgpNewsFetching) return;
+  const now = Date.now();
+  if(now - tgpNewsLastFetch < TGP_NEWS_REFRESH && tgpNewsCache.length) { tgpRenderNewsPanel(); return; }
+  tgpNewsFetching = true;
+  tgpNewsLastFetch = now;
+  if(!tgpNewsCache.length) tgpSetNewsStatus("Buscando notícias...");
+
+  const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
+  const feeds = [
+    {url:"https://www.infomoney.com.br/feed/",                     label:"InfoMoney",  type:"company", lang:"pt"},
+    {url:"https://valoreconomico.globo.com/rss/financas/",         label:"Valor",      type:"company", lang:"pt"},
+    {url:"https://agenciabrasil.ebc.com.br/rss/economia/feed.xml", label:"Ag.Brasil",  type:"macro",   lang:"pt"},
+    {url:"https://exame.com/invest/feed/",                         label:"Exame",      type:"company", lang:"pt"},
+    {url:"https://www.moneytimes.com.br/feed/",                    label:"MoneyTimes", type:"macro",   lang:"pt"},
+    {url:"https://www.cnbc.com/id/10000664/device/rss/rss.html",   label:"CNBC",       type:"macro",   lang:"en"},
+    {url:"https://feeds.bbci.co.uk/news/business/rss.xml",         label:"BBC",        type:"macro",   lang:"en"}
+  ];
+  const TICKERS = ["PETR4","VALE3","ITUB4","BBDC4","ABEV3","B3SA3","WEGE3","SUZB3"];
+
+  let allNews=[], completed=0, total=feeds.length, anyOk=false;
+
+  function tgpTryDone(){
+    completed++;
+    if(completed < total) return;
+    tgpNewsFetching = false;
+    if(!anyOk && !allNews.length){
+      // todas as fontes falharam
+      if(tgpNewsCache.length){
+        tgpSetNewsStatus("Não foi possível atualizar agora. Exibindo últimas notícias salvas.");
+      } else {
+        tgpSetNewsStatus("");
+        const list=document.getElementById("news-list");
+        if(list) list.innerHTML='<div class="news-empty">Não foi possível carregar notícias agora. Tente novamente em instantes.</div>';
+      }
+      return;
+    }
+    allNews.sort((a,b)=> b.ts - a.ts);
+    const seen={};
+    tgpNewsCache = allNews.filter(n=>{
+      const key=n.title.slice(0,40);
+      if(seen[key]) return false; seen[key]=true; return true;
+    }).slice(0,30);
+    tgpNewsCache.forEach((n,i)=>{ n.id=i+1; });
+    try { localStorage.setItem("tgp_news_cache_v1", JSON.stringify(tgpNewsCache)); } catch(e){}
+    tgpSetNewsStatus(tgpNewsCache.length + " notícias");
+    tgpRenderNewsPanel();
+  }
+
+  feeds.forEach(feed=>{
+    fetch(RSS2JSON + encodeURIComponent(feed.url) + "&count=10")
+      .then(r=> r.json())
+      .then(data=>{
+        if(data && (data.status==="ok" || data.items)) anyOk=true;
+        (data.items||[]).forEach(item=>{
+          const title=(item.title||"").trim();
+          const link=item.link||item.guid||"";
+          if(!title || title.length<10) return;
+          const lower=title.toLowerCase();
+          const isIntl = feed.lang==="en";
+          const blocked=/iphone|swarovski|bracelete|vinho|celular|notebook|desconto|oferta|promocao|black friday|cupom/.test(lower);
+          if(blocked) return;
+          let relevant;
+          if(isIntl){
+            relevant=/market|stock|economy|gdp|inflation|fed|rate|bank|trade|tariff|bond|oil|gold|dollar|euro|china|recession|growth|debt|deficit|sanction|geopolit|opec|treasury|nasdaq|dow|s&p|wall street|interest|central bank|imf|emerging/.test(lower);
+          } else {
+            relevant=/bolsa|ibovespa|selic|banco central|juros|cvm|acoes|acao|mercado|b3|petrobras|vale|itau|bradesco|ambev|weg|embraer|dividendo|resultado|lucro|receita|economia|inflacao|cambio|dolar|credito|bovespa|investimento|fiscal|fazenda|pib|copom|tesouro|fundo|fii|etf|commodities|petroleo|exportacao/.test(lower);
+          }
+          if(!relevant) return;
+          let ticker="";
+          TICKERS.forEach(t=>{ if(title.toUpperCase().indexOf(t)>=0) ticker=t; });
+          const ts=item.pubDate ? new Date(item.pubDate).getTime() : (Date.now()-allNews.length*60000);
+          const mins=Math.floor((Date.now()-ts)/60000);
+          const timeStr= mins<1?"agora": mins<60?"há "+mins+"min": mins<1440?"há "+Math.floor(mins/60)+"h":"há "+Math.floor(mins/1440)+"d";
+          let desc=(item.description||item.content||"").replace(/<[^>]+>/g,"").trim();
+          if(desc.length>800) desc=desc.slice(0,800)+"...";
+          allNews.push({ title, source:feed.label, type:ticker?"company":feed.type, ticker, time:timeStr, url:link, ts, desc, lang:feed.lang||"pt" });
+        });
+        tgpTryDone();
+      })
+      .catch(()=> tgpTryDone());
+  });
+}
+
+function tgpRenderNewsPanel(){
+  const list=document.getElementById("news-list");
+  if(!list) return;
+  if(!tgpNewsCache.length){
+    list.innerHTML='<div class="news-empty">Buscando notícias...</div>';
+    return;
+  }
+  list.innerHTML="";
+  tgpNewsCache.forEach(item=>{
+    const card=document.createElement("div");
+    card.className = "news-card" + (item.type==="macro" ? " macro" : "");
+    card.id="tgp-ni-"+item.id;
+
+    const top=document.createElement("div");
+    top.className="news-card-top";
+    const badge=document.createElement("span");
+    badge.className="news-badge";
+    badge.textContent=item.ticker || item.source || "?";
+    const time=document.createElement("span");
+    time.className="news-time";
+    time.textContent=item.time||"";
+    top.appendChild(badge); top.appendChild(time);
+
+    const title=document.createElement("div");
+    title.className="news-title";
+    title.textContent=item.title||"";
+
+    const btn=document.createElement("button");
+    btn.className="news-expand-btn"; btn.textContent="Ver resumo";
+
+    const box=document.createElement("div");
+    box.className="news-summary-box";
+
+    card.appendChild(top); card.appendChild(title); card.appendChild(btn); card.appendChild(box);
+    btn.onclick=function(){ tgpFetchSummary(item, card); };
+    list.appendChild(card);
+  });
+}
+
+function tgpFetchSummary(item, cardEl){
+  const btn=cardEl.querySelector(".news-expand-btn");
+  const box=cardEl.querySelector(".news-summary-box");
+  if(!btn || !box) return;
+  if(box.style.display==="block"){ box.style.display="none"; btn.textContent="Ver resumo"; return; }
+  tgpShowSummaryInCard(cardEl, item);
+}
+
+function tgpShowSummaryInCard(cardEl, item){
+  const btn=cardEl.querySelector(".news-expand-btn");
+  const box=cardEl.querySelector(".news-summary-box");
+  if(!btn || !box) return;
+  box.style.display="block"; box.innerHTML="";
+
+  function renderSummary(text){
+    box.innerHTML="";
+    const p=document.createElement("p");
+    p.textContent=text;
+    box.appendChild(p);
+    if(item.url){
+      const a=document.createElement("a");
+      a.href=item.url; a.target="_blank"; a.rel="noopener";
+      a.textContent="Ler notícia completa";
+      box.appendChild(a);
+    }
+    btn.textContent="Fechar"; btn.disabled=false;
+  }
+
+  if(item.desc && item.desc.length>80 && item.desc!==item.title){ renderSummary(item.desc); return; }
+
+  btn.textContent="Carregando..."; btn.disabled=true;
+  if(!item.url){ renderSummary(item.title); return; }
+
+  fetch("https://api.allorigins.win/get?url="+encodeURIComponent(item.url))
+    .then(r=> r.json())
+    .then(data=>{
+      const html=data.contents||"";
+      if(!html){ renderSummary(item.title); return; }
+      const doc=new DOMParser().parseFromString(html,"text/html");
+      ["script","style","nav","header","footer","aside","figure","iframe"].forEach(tag=>{
+        const els=doc.querySelectorAll(tag);
+        for(let i=els.length-1;i>=0;i--) els[i].parentNode.removeChild(els[i]);
+      });
+      const paras=doc.querySelectorAll("p, article p, .content p, .article-body p");
+      const texts=[];
+      for(let i=0;i<paras.length;i++){
+        const t=paras[i].textContent.trim();
+        if(t.length>80 && texts.indexOf(t)===-1) texts.push(t);
+        if(texts.length>=5) break;
+      }
+      if(!texts.length){ renderSummary(item.title); return; }
+      let summary=texts.join("\n\n");
+      if(summary.length>900) summary=summary.slice(0,900)+"...";
+      renderSummary(summary);
+    })
+    .catch(()=> renderSummary(item.title));
+}
+
+const tgpNewsOverlay=document.getElementById("news-overlay");
+const tgpNewsSheet=document.getElementById("news-sheet");
+function tgpOpenNewsSheet(){
+  tgpNewsOverlay.classList.add("show"); tgpNewsSheet.classList.add("show");
+  // mostra cache imediatamente, se houver
+  if(tgpNewsCache.length){ tgpSetNewsStatus(tgpNewsCache.length+" notícias"); tgpRenderNewsPanel(); }
+  // busca só ao abrir, respeitando o throttle de 15 min
+  const stale = (Date.now() - tgpNewsLastFetch) >= TGP_NEWS_REFRESH;
+  if(!tgpNewsCache.length || stale) tgpFetchNews();
+}
+function tgpCloseNewsSheet(){
+  tgpNewsOverlay.classList.remove("show"); tgpNewsSheet.classList.remove("show");
+}
+document.getElementById("open-news").addEventListener("click", tgpOpenNewsSheet);
+document.getElementById("news-done-btn").addEventListener("click", tgpCloseNewsSheet);
+tgpNewsOverlay.addEventListener("click", tgpCloseNewsSheet);
 </script>
 </body>
 </html>
