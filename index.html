@@ -28,6 +28,10 @@
     --center: #ff4d4d;
     --accent: #2ee6a0;
     --open-glow: rgba(46,230,160,0.35);
+    --mkt-up: #2ee6a0;
+    --mkt-down: #ff4d4d;
+    --mkt-flat: #ffd23f;
+    --mkt-unknown: var(--accent);
     --card: rgba(255,255,255,0.04);
     --card-line: rgba(255,255,255,0.08);
     --panel: #121822;
@@ -48,6 +52,10 @@
     --center: #e23b3b;
     --accent: #16b97f;
     --open-glow: rgba(22,185,127,0.25);
+    --mkt-up: #16b97f;
+    --mkt-down: #e23b3b;
+    --mkt-flat: #e0a500;
+    --mkt-unknown: var(--accent);
     --card: rgba(0,0,0,0.03);
     --card-line: rgba(0,0,0,0.08);
     --panel: #ffffff;
@@ -68,6 +76,10 @@
     --center: #5bff95;
     --accent: #39ff14;
     --open-glow: rgba(57,255,20,0.55);
+    --mkt-up: #39ff14;
+    --mkt-down: #ff3b3b;
+    --mkt-flat: #f5e03b;
+    --mkt-unknown: var(--accent);
     --card: rgba(20,80,30,0.12);
     --card-line: rgba(57,255,20,0.22);
     --panel: #020a04;
@@ -517,6 +529,41 @@ function isOpenNow(m, now){
   return isOpenUTC(m, utcH);
 }
 
+// ===== Cotações ao vivo (via Cloudflare Worker proxy) =====
+// Cole abaixo a URL do seu Worker (sem token). Enquanto estiver vazia,
+// o app funciona normalmente e os arcos abertos usam a cor padrão.
+// ↓↓↓ COLE A URL DO SEU WORKER ENTRE AS ASPAS ABAIXO ↓↓↓
+const QUOTES_URL = "https://tgp-market-quotes.jpauloct.workers.dev";
+// ↑↑↑ ex: "https://tgp-quotes.seu-usuario.workers.dev" (sem barra no final) ↑↑↑
+
+let marketQuotes = {};
+async function fetchMarketQuotes(){
+  // só busca se a URL real do Worker já tiver sido colada
+  if(!QUOTES_URL || QUOTES_URL==="COLE_AQUI_A_URL_REAL_DO_WORKER") return;
+  try{
+    const res = await fetch(QUOTES_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("quotes_http_"+res.status);
+    const data = await res.json();
+    marketQuotes = (data && typeof data==="object") ? data : {};
+    if(_DEBUG_ACTIVE) console.log("[TGP] cotações:", marketQuotes);
+  }catch(e){
+    console.warn("Falha ao buscar cotações:", e);
+  }
+}
+
+// cor do arco quando o mercado está ABERTO.
+// Nesta etapa, só saopaulo usa cotação; os demais usam a cor padrão.
+function marketArcColor(m){
+  if(m.id !== "saopaulo") return "var(--accent)";
+  const q = marketQuotes[m.id];
+  if(!q || q.changePct === null || q.changePct === undefined) return "var(--mkt-unknown)";
+  const pct = Number(q.changePct);
+  if(!Number.isFinite(pct)) return "var(--mkt-unknown)";
+  if(pct >  0.05) return "var(--mkt-up)";
+  if(pct < -0.05) return "var(--mkt-down)";
+  return "var(--mkt-flat)";
+}
+
 let hourHand,secondHand;
 function rebuild(){
   svg.innerHTML="";
@@ -585,7 +632,7 @@ function update(){
   sel.forEach(m=>{
     const arc=document.getElementById("arc-"+m.id),lbl=document.getElementById("lbl-"+m.id);
     if(!arc)return;
-    if(isOpenNow(m, now)){ arc.setAttribute("stroke","var(--accent)");
+    if(isOpenNow(m, now)){ arc.setAttribute("stroke", marketArcColor(m));
       arc.style.filter="drop-shadow(0 0 5px var(--open-glow))"; lbl.classList.add("open");
       anyOpen=true; openNames.push(mlabel(m));
     } else { arc.setAttribute("stroke","var(--ring-off)"); arc.style.filter="none"; lbl.classList.remove("open"); }
@@ -702,6 +749,9 @@ toggleBtn.addEventListener("click",()=>{
   if(t.cls==="matrix") startRain(); else stopRain();
 });
 buildSettings(); rebuild(); refreshTzLabels(); update();
+// cotações: busca ao carregar e atualiza a cada 2 minutos (nunca dentro do update)
+fetchMarketQuotes();
+setInterval(fetchMarketQuotes, 120000);
 // selo visual discreto quando o modo debug está ativo
 if(_DEBUG_ACTIVE){
   const tag=document.createElement("div");
