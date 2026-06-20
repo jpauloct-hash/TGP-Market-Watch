@@ -241,6 +241,31 @@
 const SVGNS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("clock");
 const CX=200,CY=200,ARC_W=13;
+
+// ===== MODO DEBUG =====
+// Para testar uma data/hora específica, defina DEBUG_NOW com uma string ISO.
+// Exemplos:
+//   const DEBUG_NOW = "2026-12-25T14:00:00Z";  // Natal, 14h UTC
+//   const DEBUG_NOW = "2026-02-16T13:00:00Z";  // Carnaval
+// Deixe como null para o app funcionar normalmente com a hora real.
+// Também pode ativar pela URL, ex: ...index.html?debug=2026-12-25T14:00:00Z
+const DEBUG_NOW = null;
+
+function _debugOverride(){
+  if(DEBUG_NOW) return DEBUG_NOW;
+  try{
+    const q=new URLSearchParams(location.search).get("debug");
+    if(q) return q;
+  }catch(e){}
+  return null;
+}
+// retorna a data "atual" do app: a de debug, se houver; senão, a real.
+function getNow(){
+  const ov=_debugOverride();
+  return ov ? new Date(ov) : new Date();
+}
+const _DEBUG_ACTIVE=!!_debugOverride();
+
 const ALL_MARKETS=[
   {id:"sydney",name:"SYDNEY",index:"ASX 200",open:23,close:6,tz:"Australia/Sydney",calendar:"ASX"},
   {id:"tokyo",name:"T\u00d3QUIO",index:"NIKKEI",open:0,close:6,tz:"Asia/Tokyo",calendar:"JPX"},
@@ -261,7 +286,7 @@ const ALL_MARKETS=[
 ];
 const DEFAULT_ON=["saopaulo","tokyo","newyork","london","frankfurt","shanghai","hongkong"];
 const TZ_OPTIONS=[]; for(let o=-12;o<=14;o++) TZ_OPTIONS.push(o);
-let state={ tzOffset:-new Date().getTimezoneOffset()/60, selected:new Set(DEFAULT_ON), labelMode:"index" };
+let state={ tzOffset:-getNow().getTimezoneOffset()/60, selected:new Set(DEFAULT_ON), labelMode:"index" };
 function mlabel(m){ return state.labelMode==="index" ? m.index : m.name; }
 
 function hourToAngle(h){ return (h/24)*360-90; }
@@ -419,7 +444,7 @@ function rebuild(){
   svg.appendChild(el("circle",{cx:CX,cy:CY,r:5.5,fill:"var(--center)"}));
 }
 function update(){
-  const now=new Date();
+  const now=getNow();
   const utcH=now.getUTCHours()+now.getUTCMinutes()/60+now.getUTCSeconds()/3600;
   const localH=toLocal(utcH);
   const lh=Math.floor(localH),lm=Math.floor((localH-lh)*60);
@@ -548,6 +573,15 @@ toggleBtn.addEventListener("click",()=>{
   if(t.cls==="matrix") startRain(); else stopRain();
 });
 buildSettings(); rebuild(); refreshTzLabels(); update();
+// selo visual discreto quando o modo debug está ativo
+if(_DEBUG_ACTIVE){
+  const tag=document.createElement("div");
+  tag.textContent="DEBUG: "+_debugOverride();
+  tag.style.cssText="position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:99;"+
+    "background:#ff4d4d;color:#fff;font:600 11px/1 monospace;padding:5px 10px;border-radius:6px;"+
+    "letter-spacing:0.04em;pointer-events:none;opacity:0.9;";
+  document.body.appendChild(tag);
+}
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
 }
