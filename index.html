@@ -355,7 +355,22 @@ const EXCHANGE_CALENDARS = {
   JSE:  { closed: [], earlyClose: {} },
   XETRA:{ closed: [], earlyClose: {} },
   SIX:  { closed: [], earlyClose: {} },
-  LSE:  { closed: [], earlyClose: {} },
+  LSE: {
+    closed: [
+      "2026-01-01", // New Year's Day
+      "2026-04-03", // Good Friday
+      "2026-04-06", // Easter Monday
+      "2026-05-04", // Early May Bank Holiday
+      "2026-05-25", // Spring Bank Holiday
+      "2026-08-31", // Summer Bank Holiday
+      "2026-12-25", // Christmas Day
+      "2026-12-28"  // Boxing Day substitute day
+    ],
+    earlyClose: {},
+    source: "London Stock Exchange - Business Days / Settlement Calendar 2026",
+    sourceNote: "Based on FTSE100_GBP calendar for FTSE 100 Securities on SET1 in trading currency sterling. Dates are local London dates.",
+    verifiedAt: "2026-06-20"
+  },
   B3: {
     closed: [
       "2026-01-01", // Confraternização Universal
