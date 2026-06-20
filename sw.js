@@ -1,15 +1,20 @@
-const CACHE = "tgp-market-watch-v3";
+const CACHE = "tgp-market-watch-v4";
 const ASSETS = [
+  "./",
   "./index.html",
   "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./icon-512-maskable.png",
-  "./apple-touch-icon.png"
+  "./sw.js",
+  "./apple-touch-icon.png",
+  "./tgp-icon.svg"
 ];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE).then((c) =>
+      // cacheia cada item de forma tolerante: se um falhar, não derruba todo o cache
+      Promise.allSettled(ASSETS.map((u) => c.add(u)))
+    )
+  );
   self.skipWaiting();
 });
 
