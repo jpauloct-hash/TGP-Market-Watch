@@ -303,7 +303,28 @@ const EXCHANGE_CALENDARS = {
   XETRA:{ closed: [], earlyClose: {} },
   SIX:  { closed: [], earlyClose: {} },
   LSE:  { closed: [], earlyClose: {} },
-  B3:   { closed: [], earlyClose: {} },
+  B3: {
+    closed: [
+      "2026-01-01", // Confraternização Universal
+      "2026-02-16", // Carnaval
+      "2026-02-17", // Carnaval
+      "2026-04-03", // Sexta-feira Santa
+      "2026-04-21", // Tiradentes
+      "2026-05-01", // Dia do Trabalho
+      "2026-06-04", // Corpus Christi
+      "2026-09-07", // Independência do Brasil
+      "2026-10-12", // Nossa Senhora Aparecida
+      "2026-11-02", // Finados
+      "2026-11-20", // Dia Nacional de Zumbi e Consciência Negra
+      "2026-12-24", // Véspera de Natal — sem sessão de negociação
+      "2026-12-25", // Natal
+      "2026-12-31"  // Véspera de Ano Novo — sem sessão de negociação
+    ],
+    earlyClose: {},
+    source: "B3 - Calendário de feriados e funcionamento em 2026",
+    sourceNote: "Baseado no calendário informado; conferir versão vigente do Ofício Circular 003-2026-VNC antes de publicação final.",
+    verifiedAt: "2026-06-20"
+  },
   NYSE: { closed: [], earlyClose: {} },
   TSX:  { closed: [], earlyClose: {} },
   CME:  { closed: [], earlyClose: {} }
