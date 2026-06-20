@@ -378,7 +378,27 @@ const EXCHANGE_CALENDARS = {
     sourceNote: "Baseado no calendário informado; conferir versão vigente do Ofício Circular 003-2026-VNC antes de publicação final.",
     verifiedAt: "2026-06-20"
   },
-  NYSE: { closed: [], earlyClose: {} },
+  NYSE: {
+    closed: [
+      "2026-01-01", // New Year's Day
+      "2026-01-19", // Martin Luther King, Jr. Day
+      "2026-02-16", // Washington's Birthday / Presidents' Day
+      "2026-04-03", // Good Friday
+      "2026-05-25", // Memorial Day
+      "2026-06-19", // Juneteenth National Independence Day
+      "2026-07-03", // Independence Day observed
+      "2026-09-07", // Labor Day
+      "2026-11-26", // Thanksgiving Day
+      "2026-12-25"  // Christmas Day
+    ],
+    earlyClose: {
+      "2026-11-27": "13:00", // Day after Thanksgiving
+      "2026-12-24": "13:00"  // Christmas Eve
+    },
+    source: "NYSE - Holidays & Trading Hours 2026",
+    sourceNote: "NYSE markets close early at 1:00 p.m. ET on 2026-11-27 and 2026-12-24. Current app version records earlyClose but does not yet apply it unless early-close logic is implemented.",
+    verifiedAt: "2026-06-20"
+  },
   TSX:  { closed: [], earlyClose: {} },
   CME:  { closed: [], earlyClose: {} }
 };
