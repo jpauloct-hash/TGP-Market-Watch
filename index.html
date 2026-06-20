@@ -32,6 +32,9 @@
     --mkt-down: #ff4d4d;
     --mkt-flat: #ffd23f;
     --mkt-unknown: var(--accent);
+    --news-pulse: #ffd23f;
+    --news-pulse-soft: rgba(255,210,63,0.45);
+    --news-pulse-glow: rgba(255,210,63,0.38);
     --card: rgba(255,255,255,0.04);
     --card-line: rgba(255,255,255,0.08);
     --panel: #121822;
@@ -56,6 +59,9 @@
     --mkt-down: #e23b3b;
     --mkt-flat: #e0a500;
     --mkt-unknown: var(--accent);
+    --news-pulse: #c89200;
+    --news-pulse-soft: rgba(200,146,0,0.40);
+    --news-pulse-glow: rgba(200,146,0,0.28);
     --card: rgba(0,0,0,0.03);
     --card-line: rgba(0,0,0,0.08);
     --panel: #ffffff;
@@ -80,6 +86,9 @@
     --mkt-down: #ff3b3b;
     --mkt-flat: #f5e03b;
     --mkt-unknown: var(--accent);
+    --news-pulse: #f5e03b;
+    --news-pulse-soft: rgba(245,224,59,0.45);
+    --news-pulse-glow: rgba(245,224,59,0.42);
     --card: rgba(20,80,30,0.12);
     --card-line: rgba(57,255,20,0.22);
     --panel: #020a04;
@@ -153,6 +162,17 @@
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
     transition: background 0.2s, transform 0.1s; white-space: nowrap; }
   .btn:active { transform: scale(0.97); }
+  /* pulso discreto só no botão Notícias (não afeta Ajustes/Tema) */
+  #open-news { color: var(--news-pulse); border-color: var(--news-pulse);
+    animation: newsPulse 2.4s ease-in-out infinite; }
+  @keyframes newsPulse {
+    0%, 100% { border-color: var(--news-pulse-soft); box-shadow: 0 0 0 rgba(0,0,0,0); text-shadow: none; }
+    50% { border-color: var(--news-pulse); box-shadow: 0 0 12px var(--news-pulse-glow);
+      text-shadow: 0 0 8px var(--news-pulse-glow); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #open-news { animation: none; box-shadow: none; text-shadow: none; }
+  }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5);
     opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 50; }
   .overlay.show { opacity: 1; pointer-events: auto; }
