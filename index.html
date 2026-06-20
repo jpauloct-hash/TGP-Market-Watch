@@ -242,22 +242,22 @@ const SVGNS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("clock");
 const CX=200,CY=200,ARC_W=13;
 const ALL_MARKETS=[
-  {id:"sydney",name:"SYDNEY",index:"ASX 200",open:23,close:6},
-  {id:"tokyo",name:"T\u00d3QUIO",index:"NIKKEI",open:0,close:6},
-  {id:"shanghai",name:"XANGAI",index:"SSE COMP",open:1.5,close:7},
-  {id:"hongkong",name:"HONG KONG",index:"HANG SENG",open:1.5,close:8},
-  {id:"singapore",name:"CINGAPURA",index:"STI",open:1,close:9},
-  {id:"mumbai",name:"MUMBAI",index:"SENSEX",open:3.75,close:10},
-  {id:"dubai",name:"DUBAI",index:"DFM",open:6,close:10},
-  {id:"moscow",name:"MOSCOU",index:"MOEX",open:7,close:15.5},
-  {id:"johannes",name:"JOANESBURGO",index:"JSE 40",open:7,close:15},
-  {id:"frankfurt",name:"FRANKFURT",index:"DAX",open:7,close:15.5},
-  {id:"zurich",name:"ZURIQUE",index:"SMI",open:7,close:15.5},
-  {id:"london",name:"LONDRES",index:"FTSE 100",open:8,close:16.5},
-  {id:"saopaulo",name:"S\u00c3O PAULO",index:"IBOVESPA",open:13,close:20},
-  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",open:14.5,close:21},
-  {id:"toronto",name:"TORONTO",index:"TSX",open:14.5,close:21},
-  {id:"chicago",name:"CHICAGO",index:"S&P 500",open:14.5,close:21},
+  {id:"sydney",name:"SYDNEY",index:"ASX 200",open:23,close:6,tz:"Australia/Sydney",calendar:"ASX"},
+  {id:"tokyo",name:"T\u00d3QUIO",index:"NIKKEI",open:0,close:6,tz:"Asia/Tokyo",calendar:"JPX"},
+  {id:"shanghai",name:"XANGAI",index:"SSE COMP",open:1.5,close:7,tz:"Asia/Shanghai",calendar:"SSE"},
+  {id:"hongkong",name:"HONG KONG",index:"HANG SENG",open:1.5,close:8,tz:"Asia/Hong_Kong",calendar:"HKEX"},
+  {id:"singapore",name:"CINGAPURA",index:"STI",open:1,close:9,tz:"Asia/Singapore",calendar:"SGX"},
+  {id:"mumbai",name:"MUMBAI",index:"SENSEX",open:3.75,close:10,tz:"Asia/Kolkata",calendar:"BSE"},
+  {id:"dubai",name:"DUBAI",index:"DFM",open:6,close:10,tz:"Asia/Dubai",calendar:"DFM"},
+  {id:"moscow",name:"MOSCOU",index:"MOEX",open:7,close:15.5,tz:"Europe/Moscow",calendar:"MOEX"},
+  {id:"johannes",name:"JOANESBURGO",index:"JSE 40",open:7,close:15,tz:"Africa/Johannesburg",calendar:"JSE"},
+  {id:"frankfurt",name:"FRANKFURT",index:"DAX",open:7,close:15.5,tz:"Europe/Berlin",calendar:"XETRA"},
+  {id:"zurich",name:"ZURIQUE",index:"SMI",open:7,close:15.5,tz:"Europe/Zurich",calendar:"SIX"},
+  {id:"london",name:"LONDRES",index:"FTSE 100",open:8,close:16.5,tz:"Europe/London",calendar:"LSE"},
+  {id:"saopaulo",name:"S\u00c3O PAULO",index:"IBOVESPA",open:13,close:20,tz:"America/Sao_Paulo",calendar:"B3"},
+  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",open:14.5,close:21,tz:"America/New_York",calendar:"NYSE"},
+  {id:"toronto",name:"TORONTO",index:"TSX",open:14.5,close:21,tz:"America/Toronto",calendar:"TSX"},
+  {id:"chicago",name:"CHICAGO",index:"S&P 500",open:14.5,close:21,tz:"America/Chicago",calendar:"CME"},
 ];
 const DEFAULT_ON=["saopaulo","tokyo","newyork","london","frankfurt","shanghai","hongkong"];
 const TZ_OPTIONS=[]; for(let o=-12;o<=14;o++) TZ_OPTIONS.push(o);
@@ -285,6 +285,62 @@ function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag);
   for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
 function toLocal(utcH){ return ((utcH+state.tzOffset)%24+24)%24; }
 function isOpenUTC(m,u){ let o=m.open,c=m.close; if(o<c) return u>=o&&u<c; return u>=o||u<c; }
+
+// ===== Calendário de bolsas (fim de semana local + feriados) =====
+// As listas "closed" estão VAZIAS de propósito. Preencha com as datas reais
+// de feriado de cada bolsa no formato "AAAA-MM-DD" (data LOCAL da bolsa).
+// Ex.: JPX: { closed: ["2026-01-01","2026-01-12"], earlyClose: {} }
+const EXCHANGE_CALENDARS = {
+  ASX:  { closed: [], earlyClose: {} },
+  JPX:  { closed: [], earlyClose: {} },
+  SSE:  { closed: [], earlyClose: {} },
+  HKEX: { closed: [], earlyClose: {} },
+  SGX:  { closed: [], earlyClose: {} },
+  BSE:  { closed: [], earlyClose: {} },
+  DFM:  { closed: [], earlyClose: {} },
+  MOEX: { closed: [], earlyClose: {} },
+  JSE:  { closed: [], earlyClose: {} },
+  XETRA:{ closed: [], earlyClose: {} },
+  SIX:  { closed: [], earlyClose: {} },
+  LSE:  { closed: [], earlyClose: {} },
+  B3:   { closed: [], earlyClose: {} },
+  NYSE: { closed: [], earlyClose: {} },
+  TSX:  { closed: [], earlyClose: {} },
+  CME:  { closed: [], earlyClose: {} }
+};
+
+// data local da bolsa no formato AAAA-MM-DD
+function marketDateKey(now, tz){
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz, year:"numeric", month:"2-digit", day:"2-digit"
+  }).formatToParts(now);
+  const y = parts.find(p=>p.type==="year").value;
+  const m = parts.find(p=>p.type==="month").value;
+  const d = parts.find(p=>p.type==="day").value;
+  return `${y}-${m}-${d}`;
+}
+// dia da semana local da bolsa (Sun..Sat)
+function marketWeekday(now, tz){
+  return new Intl.DateTimeFormat("en-US", { timeZone: tz, weekday:"short" }).format(now);
+}
+function isMarketWeekend(now, tz){
+  const wd = marketWeekday(now, tz);
+  return wd==="Sat" || wd==="Sun";
+}
+function isMarketHoliday(m, now){
+  if(!m.calendar || !m.tz) return false;
+  const cal = EXCHANGE_CALENDARS[m.calendar];
+  if(!cal) return false;
+  const dateKey = marketDateKey(now, m.tz);
+  return Array.isArray(cal.closed) && cal.closed.includes(dateKey);
+}
+// abertura "de verdade": horário + não fim de semana local + não feriado
+function isOpenNow(m, now){
+  if(m.tz && isMarketWeekend(now, m.tz)) return false;
+  if(isMarketHoliday(m, now)) return false;
+  const utcH = now.getUTCHours() + now.getUTCMinutes()/60 + now.getUTCSeconds()/3600;
+  return isOpenUTC(m, utcH);
+}
 
 let hourHand,secondHand;
 function rebuild(){
@@ -354,7 +410,7 @@ function update(){
   sel.forEach(m=>{
     const arc=document.getElementById("arc-"+m.id),lbl=document.getElementById("lbl-"+m.id);
     if(!arc)return;
-    if(isOpenUTC(m,utcH)){ arc.setAttribute("stroke","var(--accent)");
+    if(isOpenNow(m, now)){ arc.setAttribute("stroke","var(--accent)");
       arc.style.filter="drop-shadow(0 0 5px var(--open-glow))"; lbl.classList.add("open");
       anyOpen=true; openNames.push(mlabel(m));
     } else { arc.setAttribute("stroke","var(--ring-off)"); arc.style.filter="none"; lbl.classList.remove("open"); }
