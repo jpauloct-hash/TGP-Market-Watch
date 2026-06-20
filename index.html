@@ -614,7 +614,8 @@ function rebuild(){
     const txt=el("text",{class:"arc-label",id:"lbl-"+m.id});
     const tp=el("textPath",{href:"#"+pid,
       startOffset: bottom ? "96%" : "4%",
-      "text-anchor": bottom ? "end" : "start"});
+      "text-anchor": bottom ? "end" : "start",
+      dy: bottom ? "-0.10em" : "0.34em"});
     tp.textContent=mlabel(m);
     txt.appendChild(tp);
     svg.appendChild(txt);
