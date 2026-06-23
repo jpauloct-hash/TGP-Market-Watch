@@ -1420,6 +1420,7 @@ async function warLoad(){
     if(!data || !Array.isArray(data.sections) || !data.sections.length) throw new Error("empty");
     warRender(data);
   }catch(e){
+    console.warn("[TGP War] Falha ao carregar/renderizar Tela de Guerra:", e);
     warShowMessage("Não foi possível carregar os dados agora. Toque em ↻ para tentar de novo.", true);
     upd.textContent="";
   }finally{
