@@ -268,6 +268,12 @@
   .war-grid.cols-3 .war-card-label { font-size: 9.5px; letter-spacing: 0; }
   .war-grid.cols-3 .war-card-value { font-size: 15px; }
   .war-grid.cols-3 .war-card-meta { font-size: 9px; gap: 4px; flex-wrap: wrap; }
+  .war-grid.cols-4 { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .war-grid.cols-4 .war-card { padding: 8px 9px; gap: 2px; }
+  .war-grid.cols-4 .war-card-label { font-size: 9.5px; letter-spacing: 0; }
+  .war-grid.cols-4 .war-card-value { font-size: 15px; }
+  .war-grid.cols-4 .war-card-meta { font-size: 9px; gap: 4px; flex-wrap: wrap; }
+  @media (min-width: 480px) { .war-grid.cols-4 { grid-template-columns: repeat(4, 1fr); } }
   @media (min-width: 560px) { .war-grid { grid-template-columns: repeat(3, 1fr); } }
   @media (min-width: 820px) { .war-grid { grid-template-columns: repeat(4, 1fr); } }
   /* card */
@@ -314,6 +320,19 @@
   .war-list-rowtop { display: flex; justify-content: space-between; align-items: baseline; }
   .war-copom-extra { font-size: 9.5px; color: var(--txt-dim); opacity: 0.8; font-style: italic;
     padding: 1px 0 2px; }
+  /* tabela Focus (indicador × ano) com cara de card */
+  .war-table { padding: 12px 14px; }
+  .war-trow { display: grid; grid-template-columns: minmax(58px, 1.2fr) repeat(2, minmax(54px, 1fr));
+    gap: 6px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--card-line); }
+  .war-trow:last-of-type { border-bottom: none; }
+  .war-thead { border-bottom: 1px solid var(--card-line); padding-bottom: 8px; }
+  .war-tlabel { font-size: 12px; font-weight: 600; color: var(--txt); min-width: 0; }
+  .war-tcell { font-size: 13px; font-weight: 700; color: var(--txt); text-align: right;
+    white-space: nowrap; font-variant-numeric: tabular-nums; min-width: 0; }
+  .war-tyear { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--txt-dim);
+    text-transform: uppercase; text-align: right; white-space: nowrap; min-width: 0; }
+  .war-tfoot { font-size: 9.5px; color: var(--txt-dim); opacity: 0.85; font-style: italic;
+    padding-top: 9px; }
   .war-mock-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
     background: var(--mkt-flat); color: #1a1400; padding: 2px 7px; border-radius: 4px; margin-left: 8px; }
   /* Estado da Tela de Guerra: carregando / erro */
@@ -1303,6 +1322,35 @@ function warRenderListCard(items){
   return card;
 }
 
+// tabela com cara de card: cabeçalho de anos + linhas (indicador × valores por ano)
+function warRenderTable(section){
+  const card=document.createElement("div");
+  card.className="war-card official wide war-table";
+  const head=document.createElement("div"); head.className="war-trow war-thead";
+  const corner=document.createElement("div"); corner.className="war-tlabel"; corner.textContent="";
+  head.appendChild(corner);
+  (section.columns||[]).forEach(c=>{
+    const th=document.createElement("div"); th.className="war-tcell war-tyear"; th.textContent=c;
+    head.appendChild(th);
+  });
+  card.appendChild(head);
+  (section.rows||[]).forEach(r=>{
+    const row=document.createElement("div"); row.className="war-trow";
+    const lb=document.createElement("div"); lb.className="war-tlabel"; lb.textContent=r.label;
+    row.appendChild(lb);
+    (r.values||[]).forEach(v=>{
+      const cell=document.createElement("div"); cell.className="war-tcell"; cell.textContent=v;
+      row.appendChild(cell);
+    });
+    card.appendChild(row);
+  });
+  if(section.foot){
+    const foot=document.createElement("div"); foot.className="war-tfoot"; foot.textContent=section.foot;
+    card.appendChild(foot);
+  }
+  return card;
+}
+
 function warRender(data){
   const body=document.getElementById("war-body");
   body.innerHTML="";
@@ -1313,6 +1361,8 @@ function warRender(data){
     sec.appendChild(title);
     if(section.layout==="list"){
       sec.appendChild(warRenderListCard(section.items));
+    } else if(section.layout==="table"){
+      sec.appendChild(warRenderTable(section));
     } else if(section.layout==="columns"){
       const cols=document.createElement("div"); cols.className="war-cols";
       section.columns.forEach(col=>{
@@ -1322,11 +1372,14 @@ function warRender(data){
         cols.appendChild(c);
       });
       sec.appendChild(cols);
-    } else {
+    } else if(section.layout==="cards"){
       const grid=document.createElement("div");
-      grid.className="war-grid"+(section.cols===3?" cols-3":section.cols===1?" cols-1":"");
+      grid.className="war-grid"+(section.cols===4?" cols-4":section.cols===3?" cols-3":section.cols===1?" cols-1":"");
       section.items.forEach(it=> grid.appendChild(warRenderCard(it)));
       sec.appendChild(grid);
+    } else {
+      // layout desconhecido: não quebrar a Tela de Guerra; ignorar silenciosamente
+      console.warn("Layout desconhecido na Tela de Guerra:", section.layout);
     }
     body.appendChild(sec);
   });
