@@ -405,7 +405,52 @@
   .hour-num.cardinal { font-weight: 700; }
   .hour-num.now { fill: #ffd23f; font-weight: 700; }
   :root.matrix .hour-num.now { fill: #7dff5a; }
+
+  /* ───────── TradingView Chart Screen (inclusão cirúrgica) ───────── */
+  .tv-chart-screen {
+    position: fixed; inset: 0; z-index: 95;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.34s cubic-bezier(.3,.8,.3,1);
+    padding: calc(env(safe-area-inset-top) + 14px) 0 calc(env(safe-area-inset-bottom) + 14px);
+  }
+  .tv-chart-screen.show { transform: translateY(0); }
+  .tv-chart-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 0 18px 12px; flex: 0 0 auto;
+  }
+  .tv-chart-title { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+  .tv-chart-main {
+    font-size: 18px; font-weight: 800; letter-spacing: 0.06em;
+    color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tv-chart-sub {
+    font-size: 10.5px; font-weight: 650; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--txt-dim); margin-top: 4px;
+  }
+  .tv-chart-close {
+    width: 38px; height: 38px; border-radius: 10px;
+    border: 1px solid var(--card-line); background: var(--card); color: var(--txt);
+    font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+  }
+  .tv-chart-close:active { transform: scale(0.94); }
+  .tv-chart-frame {
+    flex: 1; min-height: 0; margin: 0 14px;
+    border: 1px solid var(--card-line); border-radius: 16px;
+    background: var(--panel); overflow: hidden;
+  }
+  .war-card.chartable { cursor: pointer; position: relative; }
+  .war-card.chartable:active { transform: scale(0.985); }
+  .war-card.chartable::after {
+    content: "GRÁFICO"; position: absolute; top: 7px; right: 8px;
+    font-size: 7.5px; font-weight: 800; letter-spacing: 0.08em;
+    color: var(--txt-dim); opacity: 0.7;
+  }
+
 </style>
+<script src="https://s3.tradingview.com/tv.js"></script>
 </head>
 <body>
   <canvas id="rain"></canvas>
@@ -476,6 +521,16 @@
     </div>
     <div class="war-updated" id="war-updated">—</div>
     <div class="war-body" id="war-body"></div>
+  </div>
+  <div class="tv-chart-screen" id="tv-chart-screen">
+    <div class="tv-chart-head">
+      <div class="tv-chart-title">
+        <span class="tv-chart-main" id="tv-chart-title">GRÁFICO</span>
+        <span class="tv-chart-sub">TradingView</span>
+      </div>
+      <button class="tv-chart-close" id="tv-chart-close" title="Fechar">&#10005;</button>
+    </div>
+    <div class="tv-chart-frame" id="tv-chart-container"></div>
   </div>
 <script>
 const SVGNS="http://www.w3.org/2000/svg";
@@ -1276,9 +1331,82 @@ function warMockData(){
 function warToneClass(t){ return t==="up"?"up":t==="down"?"down":t==="official"?"official":"flat"; }
 function warFmtPct(p){ const s=p>0?"+":""; return s+p.toFixed(2).replace(".",",")+"%"; }
 
+
+// ───────── TradingView em cards estáticos (inclusão cirúrgica) ─────────
+// Não altera a lógica de cotações/Worker. Apenas torna IBOV, USD/BRL e EUR/BRL clicáveis.
+const TGP_TV_SYMBOLS = {
+  IBOV:   { title: "IBOV",   symbol: "BMFBOVESPA:IBOV" },
+  USDBRL: { title: "USD/BRL", symbol: "FX_IDC:USDBRL" },
+  EURBRL: { title: "EUR/BRL", symbol: "FX_IDC:EURBRL" }
+};
+let tgpTvWidget = null;
+
+function tgpWarChartKey(label){
+  const s=String(label||"").toUpperCase().replace(/\s+/g,"");
+  if(s==="IBOV" || s==="IBOVESPA") return "IBOV";
+  if(s==="USD/BRL" || s==="USDBRL" || s==="DÓLAR" || s==="DOLAR") return "USDBRL";
+  if(s==="EUR/BRL" || s==="EURBRL" || s==="EURO") return "EURBRL";
+  return "";
+}
+
+function tgpOpenTradingViewChart(key){
+  const cfg=TGP_TV_SYMBOLS[key];
+  if(!cfg) return;
+  const screen=document.getElementById("tv-chart-screen");
+  const box=document.getElementById("tv-chart-container");
+  const title=document.getElementById("tv-chart-title");
+  if(!screen || !box || !title) return;
+
+  title.textContent=cfg.title;
+  screen.classList.add("show");
+
+  const uid="tv_chart_"+Date.now();
+  box.innerHTML='<div id="'+uid+'" style="width:100%;height:100%"></div>';
+
+  if(!window.TradingView || !TradingView.widget){
+    box.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--txt-dim);font-size:13px;line-height:1.6">Não foi possível carregar o TradingView agora.</div>';
+    return;
+  }
+
+  tgpTvWidget = new TradingView.widget({
+    container_id: uid,
+    autosize: true,
+    symbol: cfg.symbol,
+    interval: "D",
+    timezone: "America/Sao_Paulo",
+    theme: document.documentElement.classList.contains("light") ? "light" : "dark",
+    style: "1",
+    locale: "br",
+    toolbar_bg: "#0a0e14",
+    allow_symbol_change: false,
+    save_image: false,
+    hide_side_toolbar: false,
+    studies: []
+  });
+}
+
+function tgpCloseTradingViewChart(){
+  const screen=document.getElementById("tv-chart-screen");
+  const box=document.getElementById("tv-chart-container");
+  if(screen) screen.classList.remove("show");
+  if(box) box.innerHTML="";
+  tgpTvWidget=null;
+}
+
 function warRenderCard(it){
   const card=document.createElement("div");
   card.className="war-card "+warToneClass(it.tone);
+  const chartKey=tgpWarChartKey(it.label);
+  if(chartKey){
+    card.classList.add("chartable");
+    card.setAttribute("role","button");
+    card.setAttribute("tabindex","0");
+    card.setAttribute("title","Abrir gráfico no TradingView");
+    card.addEventListener("click",()=>tgpOpenTradingViewChart(chartKey));
+    card.addEventListener("keydown",e=>{
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); tgpOpenTradingViewChart(chartKey); }
+    });
+  }
   const lbl=document.createElement("div"); lbl.className="war-card-label"; lbl.textContent=it.label;
   const val=document.createElement("div"); val.className="war-card-value"; val.textContent=it.value;
   const meta=document.createElement("div"); meta.className="war-card-meta";
@@ -1443,6 +1571,7 @@ function warRefresh(){
 document.getElementById("open-war").addEventListener("click", warOpen);
 document.getElementById("war-close").addEventListener("click", warClose);
 document.getElementById("war-refresh").addEventListener("click", warRefresh);
+document.getElementById("tv-chart-close").addEventListener("click", tgpCloseTradingViewChart);
 </script>
 </body>
 </html>
