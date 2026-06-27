@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TGP Market Watch</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9IiMwMDAwMDAiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNzAiIGZpbGw9IiMwMjBhMDQiIHN0cm9rZT0iIzBkM2QxOCIgc3Ryb2tlLXdpZHRoPSIxMCIvPgo8cGF0aCBkPSJNIDI1NiA5NiBBIDE2MCAxNjAgMCAwIDEgNDE2IDI1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzlmZjE0IiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTSAyNTYgNDE2IEEgMTYwIDE2MCAwIDAgMSAxMjAgMzM2IiBmaWxsPSJub25lIiBzdHJva2U9IiMwZDNkMTgiIHN0cm9rZS13aWR0aD0iMjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8bGluZSB4MT0iMjU2IiB5MT0iMjU2IiB4Mj0iMjU2IiB5Mj0iMTUwIiBzdHJva2U9IiM1YmZmOTUiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8bGluZSB4MT0iMjU2IiB5MT0iMjU2IiB4Mj0iMzMwIiB5Mj0iMzAwIiBzdHJva2U9IiM1YmZmOTUiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE0IiBmaWxsPSIjMzlmZjE0Ii8+Cjx0ZXh0IHg9IjI1NiIgeT0iMzcyIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjU4IiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjMzlmZjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UR1A8L3RleHQ+Cjwvc3ZnPg==">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TGP Market Watch">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --ring-bg: #141a24;
+    --ring-track: #161d27;
+    --ring-off: #3a4656;
+    --face: #0f141c;
+    --txt: #e8edf4;
+    --txt-dim: #6b7888;
+    --hour-num: #c4cdd9;
+    --tick: #2a3543;
+    --tick-major: #4a5868;
+    --hand: #f2f5fa;
+    --second: #ff4d4d;
+    --center: #ff4d4d;
+    --accent: #2ee6a0;
+    --open-glow: rgba(46,230,160,0.35);
+    --mkt-up: #2ee6a0;
+    --mkt-down: #ff4d4d;
+    --mkt-flat: #ffd23f;
+    --mkt-unknown: var(--accent);
+    --news-pulse: #ffd23f;
+    --news-pulse-soft: rgba(255,210,63,0.45);
+    --news-pulse-glow: rgba(255,210,63,0.38);
+    --card: rgba(255,255,255,0.04);
+    --card-line: rgba(255,255,255,0.08);
+    --panel: #121822;
+  }
+  :root.light {
+    --bg: #eef1f5;
+    --ring-bg: #f7f9fb;
+    --ring-track: #e4e8ee;
+    --ring-off: #aab4c2;
+    --face: #ffffff;
+    --txt: #1a2230;
+    --txt-dim: #8a95a5;
+    --hour-num: #2a3340;
+    --tick: #c4ccd6;
+    --tick-major: #98a3b2;
+    --hand: #1a2230;
+    --second: #e23b3b;
+    --center: #e23b3b;
+    --accent: #16b97f;
+    --open-glow: rgba(22,185,127,0.25);
+    --mkt-up: #16b97f;
+    --mkt-down: #e23b3b;
+    --mkt-flat: #e0a500;
+    --mkt-unknown: var(--accent);
+    --news-pulse: #c89200;
+    --news-pulse-soft: rgba(200,146,0,0.40);
+    --news-pulse-glow: rgba(200,146,0,0.28);
+    --card: rgba(0,0,0,0.03);
+    --card-line: rgba(0,0,0,0.08);
+    --panel: #ffffff;
+  }
+  :root.matrix {
+    --bg: #000000;
+    --ring-bg: #020a04;
+    --ring-track: #051206;
+    --ring-off: #0d3d18;
+    --face: #010402;
+    --txt: #28ff70;
+    --txt-dim: #1a8a3f;
+    --hour-num: #2eff7a;
+    --tick: #0d3d18;
+    --tick-major: #1f9c4a;
+    --hand: #5bff95;
+    --second: #aaffbf;
+    --center: #5bff95;
+    --accent: #39ff14;
+    --open-glow: rgba(57,255,20,0.55);
+    --mkt-up: #39ff14;
+    --mkt-down: #ff3b3b;
+    --mkt-flat: #f5e03b;
+    --mkt-unknown: var(--accent);
+    --news-pulse: #f5e03b;
+    --news-pulse-soft: rgba(245,224,59,0.45);
+    --news-pulse-glow: rgba(245,224,59,0.42);
+    --card: rgba(20,80,30,0.12);
+    --card-line: rgba(57,255,20,0.22);
+    --panel: #020a04;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--txt);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+  body {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100dvh; padding: calc(env(safe-area-inset-top) + 4vh) 16px calc(env(safe-area-inset-bottom) + 8vh); gap: 14px;
+    position: relative;
+  }
+  #rain {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    z-index: 0; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+  }
+  :root.matrix #rain { opacity: 1; }
+  :root.matrix { background: #000 !important; }
+  :root.matrix body { background: transparent !important; }
+  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#war-screen):not(#tv-chart-screen) { position: relative; z-index: 1; }
+  .brand {
+    width: min(92vw, 440px); display: flex; align-items: baseline; gap: 8px;
+    padding: 0 4px 2px; user-select: none;
+  }
+  .brand-mark {
+    font-size: 19px; font-weight: 800; letter-spacing: 0.02em; color: var(--accent);
+  }
+  .brand-name {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.34em; color: var(--txt-dim);
+  }
+  :root.matrix .brand-mark { text-shadow: 0 0 9px var(--open-glow); }
+  .ticker {
+    width: min(92vw, 440px); background: var(--card); border: 1px solid var(--card-line);
+    border-radius: 14px; padding: 11px 15px; font-size: 12.5px; line-height: 1.4;
+    display: flex; align-items: flex-start; gap: 9px;
+  }
+  .ticker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    margin-top: 4px; flex-shrink: 0; box-shadow: 0 0 8px var(--accent); }
+  .ticker .lbl { color: var(--txt-dim); font-weight: 600; }
+  .clock-wrap { width: min(92vw, 440px); aspect-ratio: 1; position: relative; }
+  svg { width: 100%; height: 100%; display: block; }
+  .center-readout { position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+  .center-readout .next { font-size: 10.5px; color: var(--txt-dim); letter-spacing: 0.05em;
+    text-transform: uppercase; margin-bottom: 3px; max-width: 130px; }
+  .center-readout .time { font-size: 30px; font-weight: 300; color: var(--accent);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  .center-readout .tz { font-size: 10px; color: var(--txt-dim); letter-spacing: 0.1em; margin-top: 2px; }
+  .status { width: min(92vw, 440px); display: flex; align-items: center;
+    justify-content: space-between; font-size: 14.5px; }
+  .status .left { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .status .pulse { width: 11px; height: 11px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 0 var(--open-glow); animation: pulse 2.4s infinite; }
+  .status.closed .pulse { background: var(--txt-dim); animation: none; box-shadow: none; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 var(--open-glow); }
+    70% { box-shadow: 0 0 0 12px rgba(0,0,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  }
+  .status .clock-utc { color: var(--txt-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.03em; }
+  .controls { display: flex; gap: 8px; width: min(94vw, 460px); }
+  .btn { flex: 1; padding: 11px 6px; border-radius: 12px; border: 1px solid var(--card-line);
+    background: var(--card); color: var(--txt); font-size: 12.5px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+    transition: background 0.2s, transform 0.1s; white-space: nowrap; }
+  .btn:active { transform: scale(0.97); }
+  /* pulso discreto só no botão Notícias (não afeta Ajustes/Tema) */
+  #open-news { color: var(--news-pulse); border-color: var(--news-pulse);
+    animation: newsPulse 2.4s ease-in-out infinite; }
+  @keyframes newsPulse {
+    0%, 100% { border-color: var(--news-pulse-soft); box-shadow: 0 0 0 rgba(0,0,0,0); text-shadow: none; }
+    50% { border-color: var(--news-pulse); box-shadow: 0 0 12px var(--news-pulse-glow);
+      text-shadow: 0 0 8px var(--news-pulse-glow); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #open-news { animation: none; box-shadow: none; text-shadow: none; }
+  }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 50; }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .sheet { position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel);
+    border-radius: 20px 20px 0 0; padding: 22px 20px calc(env(safe-area-inset-bottom) + 24px);
+    transform: translateY(100%); transition: transform 0.32s cubic-bezier(.3,.8,.3,1);
+    z-index: 51; max-height: 82dvh; overflow-y: auto; max-width: 480px; margin: 0 auto; }
+  .sheet.show { transform: translateY(0); }
+  .sheet h2 { font-size: 17px; margin-bottom: 4px; }
+  .sheet .sub { font-size: 12.5px; color: var(--txt-dim); margin-bottom: 18px; }
+  .sheet .grip { width: 38px; height: 4px; border-radius: 2px; background: var(--card-line); margin: 0 auto 16px; }
+  /* ── Painel de notícias (mesmo padrão visual do sheet) ── */
+  #news-status { font-size: 11.5px; color: var(--txt-dim); margin-bottom: 12px; }
+  #news-list { display: flex; flex-direction: column; gap: 8px; }
+  .news-card { background: var(--card); border: 1px solid var(--card-line); border-left: 2px solid var(--accent);
+    border-radius: 10px; padding: 12px 13px; display: flex; flex-direction: column; }
+  .news-card.macro { border-left-color: var(--mkt-flat); }
+  .news-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; }
+  .news-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px;
+    background: rgba(127,127,127,0.12); color: var(--accent); white-space: nowrap; }
+  .news-card.macro .news-badge { color: var(--mkt-flat); }
+  .news-time { font-size: 9.5px; color: var(--txt-dim); white-space: nowrap; }
+  .news-title { font-size: 12.5px; color: var(--txt); font-weight: 600; line-height: 1.5; margin-bottom: 8px; }
+  .news-expand-btn { align-self: flex-start; background: transparent; border: 1px solid var(--card-line);
+    border-radius: 6px; color: var(--accent); font-size: 10.5px; font-weight: 700; padding: 4px 11px;
+    cursor: pointer; font-family: inherit; transition: background 0.15s; }
+  .news-expand-btn:active { transform: scale(0.97); }
+  .news-summary-box { display: none; background: var(--bg); border: 1px solid var(--card-line);
+    border-radius: 7px; padding: 11px; margin-top: 8px; }
+  .news-summary-box p { font-size: 11.5px; color: var(--txt-dim); line-height: 1.7; margin-bottom: 8px; white-space: pre-line; }
+  .news-summary-box a { font-size: 10.5px; color: var(--accent); font-weight: 700; text-decoration: none; display: block; }
+  .news-empty { padding: 26px 10px; text-align: center; color: var(--txt-dim); font-size: 12.5px; }
+  /* painel de notícias como bottom sheet real (75% da tela, lista rola dentro) */
+  #news-overlay { position: fixed; inset: 0; z-index: 60; }
+  #news-sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 61;
+    height: 75vh; height: 75dvh; max-height: 75dvh;
+    max-width: 480px; margin: 0 auto;
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--panel); border-radius: 20px 20px 0 0;
+    padding: 22px 20px calc(env(safe-area-inset-bottom) + 18px);
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(.3,.8,.3,1);
+  }
+  #news-sheet.show { transform: translateY(0); }
+  #news-sheet .grip, #news-sheet h2, #news-sheet .sub, #news-status, #news-done-btn { flex: 0 0 auto; }
+  #news-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 12px; }
+  /* ───────── Botão largo Tela de Guerra ───────── */
+  .controls.war-row { margin-top: 8px; }
+  .btn-war { flex: 1; font-weight: 700; letter-spacing: 0.04em;
+    background: linear-gradient(135deg, var(--card), var(--card));
+    border-color: var(--mkt-down); color: var(--mkt-down); }
+  .btn-war:active { transform: scale(0.99); }
+  /* ───────── Tela de Guerra (overlay tela cheia) ───────── */
+  .war-screen {
+    position: fixed; inset: 0; z-index: 80;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.34s cubic-bezier(.3,.8,.3,1);
+    padding: calc(env(safe-area-inset-top) + 14px) 0 0;
+  }
+  .war-screen.show { transform: translateY(0); }
+  /* reforço por ID (especificidade alta) para garantir overlay de tela cheia em todos os navegadores */
+  #war-screen { position: fixed; inset: 0; z-index: 80; }
+  .war-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px 10px; }
+  .war-title { display: flex; flex-direction: column; line-height: 1.1; }
+  .war-title-main { font-size: 18px; font-weight: 800; letter-spacing: 0.06em; color: var(--txt); }
+  .war-title-sub { font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--mkt-down); margin-top: 3px; }
+  .war-head-actions { display: flex; gap: 8px; }
+  .war-refresh, .war-close { width: 38px; height: 38px; border-radius: 10px;
+    border: 1px solid var(--card-line); background: var(--card); color: var(--txt);
+    font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .war-refresh:active, .war-close:active { transform: scale(0.94); }
+  .war-refresh.spin { animation: warSpin 0.6s linear; }
+  @keyframes warSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  .war-updated { padding: 0 18px 12px; font-size: 11px; color: var(--txt-dim); }
+  .war-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 0 14px calc(env(safe-area-inset-bottom) + 24px); }
+  /* seções */
+  .war-section { margin-bottom: 20px; }
+  .war-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--txt-dim); margin: 0 4px 9px; display: flex;
+    align-items: center; gap: 8px; }
+  .war-section-title::after { content: ""; flex: 1; height: 1px; background: var(--card-line); }
+  /* grade de cards: empilha no celular, vira grid em telas largas */
+  .war-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .war-grid.cols-1 { grid-template-columns: 1fr; }
+  .war-grid.cols-3 { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .war-grid.cols-3 .war-card { padding: 8px 9px; gap: 2px; }
+  .war-grid.cols-3 .war-card-label { font-size: 9.5px; letter-spacing: 0; }
+  .war-grid.cols-3 .war-card-value { font-size: 15px; }
+  .war-grid.cols-3 .war-card-meta { font-size: 9px; gap: 4px; flex-wrap: wrap; }
+  .war-grid.cols-4 { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .war-grid.cols-4 .war-card { padding: 8px 9px; gap: 2px; }
+  .war-grid.cols-4 .war-card-label { font-size: 9.5px; letter-spacing: 0; }
+  .war-grid.cols-4 .war-card-value { font-size: 15px; }
+  .war-grid.cols-4 .war-card-meta { font-size: 9px; gap: 4px; flex-wrap: wrap; }
+  @media (min-width: 480px) { .war-grid.cols-4 { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 560px) { .war-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 820px) { .war-grid { grid-template-columns: repeat(4, 1fr); } }
+  /* card */
+  .war-card { background: var(--card); border: 1px solid var(--card-line);
+    border-radius: 12px; padding: 13px 14px; display: flex; flex-direction: column; gap: 3px;
+    border-left: 3px solid var(--card-line); }
+  .war-card.up { border-left-color: var(--mkt-up); }
+  .war-card.down { border-left-color: var(--mkt-down); }
+  .war-card.flat { border-left-color: var(--mkt-flat); }
+  .war-card.official { border-left-color: var(--accent); }
+  .war-card-label { font-size: 11px; color: var(--txt-dim); font-weight: 600;
+    letter-spacing: 0.02em; }
+  .war-card-value { font-size: 21px; font-weight: 750; color: var(--txt); line-height: 1.15;
+    font-variant-numeric: tabular-nums; }
+  .war-card-meta { font-size: 10.5px; font-weight: 600; display: flex; gap: 6px; align-items: baseline; }
+  .war-chg { font-variant-numeric: tabular-nums; }
+  .war-chg.up { color: var(--mkt-up); }
+  .war-chg.down { color: var(--mkt-down); }
+  .war-chg.flat { color: var(--mkt-flat); }
+  .war-ref { color: var(--txt-dim); font-weight: 500; }
+  /* card largo (copom, tesouro) ocupa a linha toda */
+  .war-card.wide { grid-column: 1 / -1; }
+  /* layout de COLUNAS temáticas: SEMPRE 3 lado a lado, como uma tabela (igual à planilha) */
+  .war-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .war-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .war-col-head { font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--txt-dim); padding: 2px 1px 0; line-height: 1.2; }
+  /* cards dentro das colunas: compactos para caber 3 lado a lado no celular */
+  .war-col .war-card { padding: 8px 9px; gap: 2px; border-left-width: 3px; }
+  .war-col .war-card-label { font-size: 9.5px; letter-spacing: 0; }
+  .war-col .war-card-value { font-size: 15px; font-weight: 700; }
+  .war-col .war-card-meta { font-size: 9px; gap: 4px; flex-wrap: wrap; }
+  .war-list-row { display: flex; justify-content: space-between; align-items: baseline;
+    padding: 7px 0; border-bottom: 1px solid var(--card-line); }
+  .war-list-row:last-child { border-bottom: none; }
+  .war-list-name { font-size: 12.5px; color: var(--txt); font-weight: 600; }
+  .war-list-sub { font-size: 10px; color: var(--txt-dim); font-weight: 500; }
+  .war-list-val { font-size: 13px; font-weight: 700; color: var(--txt); font-variant-numeric: tabular-nums; }
+  /* Copom: estados de linha do tempo (passado apagado / próxima em destaque / seguinte neutra) */
+  .war-list-row.past .war-list-name, .war-list-row.past .war-list-val { color: var(--txt-dim); opacity: 0.7; }
+  .war-list-row.next .war-list-name { color: var(--accent); }
+  .war-list-row.next .war-list-val { color: var(--accent); }
+  .war-list-row.col { flex-direction: column; align-items: stretch; gap: 4px; }
+  .war-list-rowtop { display: flex; justify-content: space-between; align-items: baseline; }
+  .war-copom-extra { font-size: 9.5px; color: var(--txt-dim); opacity: 0.8; font-style: italic;
+    padding: 1px 0 2px; }
+  /* tabela Focus (indicador × ano) com cara de card */
+  .war-table { padding: 12px 14px; }
+  .war-trow { display: grid; grid-template-columns: minmax(58px, 1.2fr) repeat(2, minmax(54px, 1fr));
+    gap: 6px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--card-line); }
+  .war-trow:last-of-type { border-bottom: none; }
+  .war-thead { border-bottom: 1px solid var(--card-line); padding-bottom: 8px; }
+  .war-tlabel { font-size: 12px; font-weight: 600; color: var(--txt); min-width: 0; }
+  .war-tcell { font-size: 13px; font-weight: 700; color: var(--txt); text-align: right;
+    white-space: nowrap; font-variant-numeric: tabular-nums; min-width: 0; }
+  .war-tyear { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--txt-dim);
+    text-transform: uppercase; text-align: right; white-space: nowrap; min-width: 0; }
+  .war-tfoot { font-size: 9.5px; color: var(--txt-dim); opacity: 0.85; font-style: italic;
+    padding-top: 9px; }
+  .war-mock-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+    background: var(--mkt-flat); color: #1a1400; padding: 2px 7px; border-radius: 4px; margin-left: 8px; }
+  /* Estado da Tela de Guerra: carregando / erro */
+  .war-state {
+    min-height: clamp(180px, 38vh, 360px);
+    margin: 18px 0;
+    padding: 42px 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    text-align: center; color: var(--txt-dim);
+    background: var(--card); border: 1px solid var(--card-line); border-radius: 18px;
+    font-size: 13px; font-weight: 600; line-height: 1.55; letter-spacing: 0.02em;
+  }
+  .war-state::before {
+    content: "↻";
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; border: 1px solid var(--card-line);
+    color: var(--accent); background: rgba(255, 255, 255, 0.03);
+    font-size: 21px; font-weight: 700;
+    animation: warStatePulse 1.8s ease-in-out infinite;
+  }
+  .war-state.err { color: var(--txt); border-color: var(--mkt-down); }
+  .war-state.err::before {
+    content: "!"; color: var(--mkt-down); border-color: var(--mkt-down); animation: none;
+  }
+  @keyframes warStatePulse {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .war-state::before { animation: none; }
+  }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--txt-dim); margin-bottom: 8px; }
+  select { width: 100%; padding: 12px 14px; border-radius: 11px; border: 1px solid var(--card-line);
+    background: var(--card); color: var(--txt); font-size: 14.5px; font-family: inherit;
+    appearance: none; -webkit-appearance: none; }
+  .mkt-list { display: flex; flex-direction: column; gap: 2px; }
+  .mkt-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+    border-radius: 11px; cursor: pointer; transition: background 0.15s; }
+  .mkt-item:active { background: var(--card); }
+  .mkt-item .sw { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--card-line);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; font-size: 13px; color: #fff; }
+  .mkt-item.on .sw { background: var(--accent); border-color: var(--accent); }
+  .mkt-item .nm { font-size: 14.5px; font-weight: 600; }
+  .mkt-item .idx { font-size: 12px; font-weight: 500; color: var(--txt-dim); }
+  .seg { display: flex; gap: 8px; }
+  .seg-btn {
+    flex: 1; padding: 11px; border-radius: 11px; border: 1px solid var(--card-line);
+    background: var(--card); color: var(--txt-dim); font-size: 14px; font-weight: 600;
+    font-family: inherit; cursor: pointer; transition: all 0.15s;
+  }
+  .seg-btn.active { background: var(--accent); color: #04130d; border-color: var(--accent); }
+  .mkt-item .hrs { font-size: 11.5px; color: var(--txt-dim); margin-left: auto; font-variant-numeric: tabular-nums; }
+  .done-btn { width: 100%; padding: 14px; border-radius: 13px; border: none; margin-top: 8px;
+    background: var(--accent); color: #04130d; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .arc-label { font-size: 10.5px; font-weight: 650; letter-spacing: 0.12em; fill: #0a0e14; dominant-baseline: central; text-rendering: geometricPrecision; }
+  :root.light .arc-label { fill: #ffffff; }
+  .arc-label.open { fill: #fff; }
+  .hour-num { font-size: 14px; font-weight: 500; fill: var(--hour-num); font-variant-numeric: tabular-nums; }
+  :root.matrix { font-family: "SF Mono", "Cascadia Code", "Consolas", ui-monospace, monospace; }
+  :root.matrix .center-readout .time,
+  :root.matrix #status-text,
+  :root.matrix .ticker { text-shadow: 0 0 7px var(--open-glow); }
+  :root.matrix .arc-label { fill: #000; }
+  :root.matrix .arc-label.open { fill: #001a06; }
+  :root.matrix .hour-num.cardinal { fill: var(--accent); }
+  .hour-num.cardinal { font-weight: 700; }
+  .hour-num.now { fill: #ffd23f; font-weight: 700; }
+  :root.matrix .hour-num.now { fill: #7dff5a; }
+
+  /* ───────── TradingView Chart Screen (inclusão cirúrgica) ───────── */
+  .tv-chart-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(.3,.8,.3,1);
+    padding: calc(env(safe-area-inset-top) + 14px) 12px calc(env(safe-area-inset-bottom) + 14px);
+  }
+  /* reforço por ID: impede que a regra global body > * sobrescreva position/z-index */
+  #tv-chart-screen { position: fixed; inset: 0; z-index: 120; }
+  .tv-chart-screen.show { transform: translateY(0); }
+  .tv-chart-head {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px 12px;
+  }
+  .tv-chart-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--txt);
+    letter-spacing: 0.06em;
+  }
+  .tv-chart-subtitle {
+    font-size: 10px;
+    color: var(--txt-dim);
+    margin-top: 3px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .tv-chart-close {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--card-line);
+    background: var(--card);
+    color: var(--txt);
+    font-size: 17px;
+    cursor: pointer;
+  }
+  .tv-chart-close:active { transform: scale(0.94); }
+  .tv-chart-container {
+    flex: 1;
+    min-height: 0;
+    border: 1px solid var(--card-line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--panel);
+  }
+  .war-card.tv-clickable {
+    cursor: pointer;
+    position: relative;
+  }
+  .war-card.tv-clickable:active { transform: scale(0.985); }
+  .war-card.tv-clickable::after {
+    content: "GRÁFICO";
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    opacity: 0.75;
+  }
+
+
+</style>
+<script src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+  <canvas id="rain"></canvas>
+  <div class="brand">
+    <span class="brand-mark">TGP</span><span class="brand-name">MARKET CLOCK</span>
+  </div>
+  <div class="ticker">
+    <span class="dot"></span>
+    <span><span class="lbl">FUSO ·</span> <span id="event-text">—</span></span>
+  </div>
+  <div class="clock-wrap">
+    <svg viewBox="0 0 400 400" id="clock"></svg>
+    <div class="center-readout"></div>
+  </div>
+  <div class="status" id="status">
+    <div class="left"><span class="pulse"></span><span id="status-text">—</span></div>
+    <div class="clock-utc"><span id="utc-foot">00:00</span> UTC</div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="open-settings">&#9881; Ajustes</button>
+    <button class="btn" id="open-news">&#128240; Notícias</button>
+    <button class="btn" id="toggle">&#9680; Tema</button>
+  </div>
+  <div class="controls war-row">
+    <button class="btn btn-war" id="open-war">&#9876;&#65039; Tela de Guerra</button>
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <div class="sheet" id="sheet">
+    <div class="grip"></div>
+    <h2>Ajustes</h2>
+    <div class="sub">Escolha seu fuso e os mercados que quer acompanhar.</div>
+    <div class="field">
+      <label>Seu fuso horário</label>
+      <select id="tz-select"></select>
+    </div>
+    <div class="field">
+      <label>Exibir nos arcos</label>
+      <div class="seg" id="label-seg">
+        <button class="seg-btn" data-mode="city">Cidade</button>
+        <button class="seg-btn" data-mode="index">Índice</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Mercados</label>
+      <div class="mkt-list" id="mkt-list"></div>
+    </div>
+    <button class="done-btn" id="done-btn">Pronto</button>
+  </div>
+  <div class="overlay" id="news-overlay"></div>
+  <div class="sheet" id="news-sheet">
+    <div class="grip"></div>
+    <h2>Notícias do mercado</h2>
+    <div class="sub">Resumo das principais manchetes financeiras.</div>
+    <div id="news-status"></div>
+    <div id="news-list"></div>
+    <button class="done-btn" id="news-done-btn">Pronto</button>
+  </div>
+  <div class="war-screen" id="war-screen">
+    <div class="war-head">
+      <div class="war-title">
+        <span class="war-title-main">TELA DE GUERRA</span>
+        <span class="war-title-sub">Mercado Brasil</span>
+      </div>
+      <div class="war-head-actions">
+        <button class="war-refresh" id="war-refresh" title="Atualizar">&#8635;</button>
+        <button class="war-close" id="war-close" title="Fechar">&#10005;</button>
+      </div>
+    </div>
+    <div class="war-updated" id="war-updated">—</div>
+    <div class="war-body" id="war-body"></div>
+  </div>
+  <div id="tv-chart-screen" class="tv-chart-screen">
+    <div class="tv-chart-head">
+      <div>
+        <div id="tv-chart-title" class="tv-chart-title">GRÁFICO</div>
+        <div id="tv-chart-subtitle" class="tv-chart-subtitle">TradingView</div>
+      </div>
+      <button id="tv-chart-close" class="tv-chart-close" type="button">&#10005;</button>
+    </div>
+    <div id="tv-chart-container" class="tv-chart-container"></div>
+  </div>
+<script>
+const SVGNS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("clock");
+const CX=200,CY=200,ARC_W=13;
+// pequeno deslocamento do caminho do TEXTO (não do arco visual),
+// para centralizar melhor as letras na espessura do arco, sobretudo no Safari/iPhone.
+const LABEL_RADIUS_OFFSET=1.5;
+
+// ===== MODO DEBUG =====
+// Para testar uma data/hora específica, defina DEBUG_NOW com uma string ISO.
+// Exemplos:
+//   const DEBUG_NOW = "2026-12-25T14:00:00Z";  // Natal, 14h UTC
+//   const DEBUG_NOW = "2026-02-16T13:00:00Z";  // Carnaval
+// Deixe como null para o app funcionar normalmente com a hora real.
+// Também pode ativar pela URL, ex: ...index.html?debug=2026-12-25T14:00:00Z
+const DEBUG_NOW = null;
+
+function _debugOverride(){
+  if(DEBUG_NOW) return DEBUG_NOW;
+  try{
+    const q=new URLSearchParams(location.search).get("debug");
+    if(q) return q;
+  }catch(e){}
+  return null;
+}
+// retorna a data "atual" do app: a de debug, se houver; senão, a real.
+function getNow(){
+  const ov=_debugOverride();
+  return ov ? new Date(ov) : new Date();
+}
+const _DEBUG_ACTIVE=!!_debugOverride();
+
+const ALL_MARKETS=[
+  {id:"sydney",name:"SYDNEY",index:"ASX 200",open:23,close:6,tz:"Australia/Sydney",calendar:"ASX"},
+  {id:"tokyo",name:"T\u00d3QUIO",index:"NIKKEI",open:0,close:6,tz:"Asia/Tokyo",calendar:"JPX"},
+  {id:"shanghai",name:"XANGAI",index:"SSE COMP",open:1.5,close:7,tz:"Asia/Shanghai",calendar:"SSE"},
+  {id:"hongkong",name:"HONG KONG",index:"HANG SENG",open:1.5,close:8,tz:"Asia/Hong_Kong",calendar:"HKEX"},
+  {id:"singapore",name:"CINGAPURA",index:"STI",open:1,close:9,tz:"Asia/Singapore",calendar:"SGX"},
+  {id:"mumbai",name:"MUMBAI",index:"SENSEX",open:3.75,close:10,tz:"Asia/Kolkata",calendar:"BSE"},
+  {id:"dubai",name:"DUBAI",index:"DFM",open:6,close:10,tz:"Asia/Dubai",calendar:"DFM"},
+  {id:"moscow",name:"MOSCOU",index:"MOEX",open:7,close:15.5,tz:"Europe/Moscow",calendar:"MOEX"},
+  {id:"johannes",name:"JOANESBURGO",index:"JSE 40",open:7,close:15,tz:"Africa/Johannesburg",calendar:"JSE"},
+  {id:"frankfurt",name:"FRANKFURT",index:"DAX",open:7,close:15.5,tz:"Europe/Berlin",calendar:"XETRA"},
+  {id:"zurich",name:"ZURIQUE",index:"SMI",open:7,close:15.5,tz:"Europe/Zurich",calendar:"SIX"},
+  {id:"london",name:"LONDRES",index:"FTSE 100",open:8,close:16.5,tz:"Europe/London",calendar:"LSE"},
+  {id:"saopaulo",name:"S\u00c3O PAULO",index:"IBOVESPA",open:13,close:20,tz:"America/Sao_Paulo",calendar:"B3"},
+  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",open:14.5,close:21,tz:"America/New_York",calendar:"NYSE"},
+  {id:"toronto",name:"TORONTO",index:"TSX",open:14.5,close:21,tz:"America/Toronto",calendar:"TSX"},
+  {id:"chicago",name:"CHICAGO",index:"S&P 500",open:14.5,close:21,tz:"America/Chicago",calendar:"CME"},
+];
+const DEFAULT_ON=["saopaulo","tokyo","newyork","london","frankfurt","shanghai","hongkong"];
+const TZ_OPTIONS=[]; for(let o=-12;o<=14;o++) TZ_OPTIONS.push(o);
+let state={ tzOffset:-getNow().getTimezoneOffset()/60, selected:new Set(DEFAULT_ON), labelMode:"index" };
+function mlabel(m){ return state.labelMode==="index" ? m.index : m.name; }
+
+function hourToAngle(h){ return (h/24)*360-90; }
+function polar(cx,cy,r,a){ const rad=a*Math.PI/180; return {x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)}; }
+function arcPath(cx,cy,r,startH,endH){
+  let span=endH-startH; if(span<=0) span+=24;
+  const a0=hourToAngle(startH),a1=hourToAngle(startH+span);
+  const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1);
+  return `M ${p0.x} ${p0.y} A ${r} ${r} 0 ${span>12?1:0} 1 ${p1.x} ${p1.y}`;
+}
+// caminho do mesmo arco, porém percorrido no sentido anti-horário (do fim ao início).
+// usado só para o texto-guia dos rótulos da metade inferior, para o texto ficar
+// em posição normal de leitura (não de cabeça para baixo).
+function arcPathReverse(cx,cy,r,startH,endH){
+  let span=endH-startH; if(span<=0) span+=24;
+  const a0=hourToAngle(startH),a1=hourToAngle(startH+span);
+  const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1);
+  return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${span>12?1:0} 0 ${p0.x} ${p0.y}`;
+}
+function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+function toLocal(utcH){ return ((utcH+state.tzOffset)%24+24)%24; }
+function isOpenUTC(m,u){ let o=m.open,c=m.close; if(o<c) return u>=o&&u<c; return u>=o||u<c; }
+
+// ===== Calendário de bolsas (fim de semana local + feriados) =====
+// As listas "closed" estão VAZIAS de propósito. Preencha com as datas reais
+// de feriado de cada bolsa no formato "AAAA-MM-DD" (data LOCAL da bolsa).
+// Ex.: JPX: { closed: ["2026-01-01","2026-01-12"], earlyClose: {} }
+const EXCHANGE_CALENDARS = {
+  ASX:  { closed: [], earlyClose: {} },
+  JPX: {
+    closed: [
+      "2026-01-01", // New Year's Day
+      "2026-01-02", // Market Holiday
+      "2026-01-03", // Market Holiday
+      "2026-01-12", // Coming of Age Day
+      "2026-02-11", // National Foundation Day
+      "2026-02-23", // Emperor's Birthday
+      "2026-03-20", // Vernal Equinox
+      "2026-04-29", // Showa Day
+      "2026-05-03", // Constitution Memorial Day
+      "2026-05-04", // Greenery Day
+      "2026-05-05", // Children's Day
+      "2026-05-06", // Constitution Memorial Day observed
+      "2026-07-20", // Marine Day
+      "2026-08-11", // Mountain Day
+      "2026-09-21", // Respect for the Aged Day
+      "2026-09-22", // Holiday
+      "2026-09-23", // Autumnal Equinox
+      "2026-10-12", // Sports Day
+      "2026-11-03", // Culture Day
+      "2026-11-23", // Labor Thanksgiving Day
+      "2026-12-31"  // Market Holiday
+    ],
+    earlyClose: {},
+    source: "JPX - Market Holidays 2026",
+    sourceNote: "JPX markets are closed on Saturdays, Sundays, national holidays, and the dates indicated in the official JPX calendar. Dates are local Japan dates.",
+    verifiedAt: "2026-06-20"
+  },
+  SSE: {
+    closed: [
+      "2026-01-01", // New Year
+      "2026-01-02", // New Year
+      "2026-02-16", // Chinese New Year
+      "2026-02-17", // Chinese New Year
+      "2026-02-18", // Chinese New Year
+      "2026-02-19", // Chinese New Year
+      "2026-02-20", // Chinese New Year
+      "2026-02-23", // Chinese New Year
+      "2026-04-06", // Ching Ming Festival
+      "2026-05-01", // Labour Day
+      "2026-05-04", // Labour Day
+      "2026-05-05", // Labour Day
+      "2026-06-19", // Tuen Ng Festival
+      "2026-09-25", // Mid-Autumn Festival
+      "2026-10-01", // National Day
+      "2026-10-02", // National Day
+      "2026-10-05", // National Day
+      "2026-10-06", // National Day
+      "2026-10-07"  // National Day
+    ],
+    earlyClose: {},
+    source: "CIIS / Shanghai Stock Exchange Holiday Schedule 2026",
+    sourceNote: "Based on the 2026 Holiday Schedule of Shanghai Stock Exchange. Dates are local Shanghai dates. Weekends are handled separately by isMarketWeekend().",
+    verifiedAt: "2026-06-20"
+  },
+  HKEX: {
+    closed: [
+      "2026-01-01", // New Year
+      "2026-02-17", // Lunar New Year
+      "2026-02-18", // Lunar New Year
+      "2026-02-19", // Lunar New Year
+      "2026-04-03", // Good Friday
+      "2026-04-06", // Ching Ming Festival / Easter period
+      "2026-04-07", // The day following Easter Monday
+      "2026-05-01", // Labour Day
+      "2026-05-25", // Birthday of Buddha
+      "2026-06-19", // Tuen Ng Festival
+      "2026-07-01", // HKSAR Establishment Day
+      "2026-10-01", // National Day
+      "2026-10-19", // Chung Yeung Festival
+      "2026-12-25"  // Christmas Day
+    ],
+    earlyClose: {
+      "2026-02-16": "12:00", // Eve of Lunar New Year
+      "2026-12-24": "12:00", // Eve of Christmas Day
+      "2026-12-31": "12:00"  // Eve of New Year
+    },
+    source: "Hang Seng Indexes - Holiday Schedule 2026 / HKEX Securities Market Holiday Schedule 2026",
+    sourceNote: "Closed dates are based on the Hang Seng Index / Hong Kong-listed row in the HSI holiday schedule. Dates marked as X are treated as full closures. Dates marked as 34 are not treated as full closures in this version. Half-day trading dates are recorded in earlyClose, but the current app version does not yet apply earlyClose logic.",
+    verifiedAt: "2026-06-20"
+  },
+  SGX:  { closed: [], earlyClose: {} },
+  BSE:  { closed: [], earlyClose: {} },
+  DFM:  { closed: [], earlyClose: {} },
+  MOEX: { closed: [], earlyClose: {} },
+  JSE:  { closed: [], earlyClose: {} },
+  XETRA: {
+    closed: [
+      "2026-01-01", // New Year's Day
+      "2026-04-03", // Good Friday
+      "2026-04-06", // Easter Monday
+      "2026-05-01", // Labor Day
+      "2026-12-24", // Christmas Eve — no trading
+      "2026-12-25", // Christmas Day
+      "2026-12-26", // Boxing Day
+      "2026-12-31"  // New Year's Eve — no trading
+    ],
+    earlyClose: {},
+    source: "Deutsche Börse - Trading Calendar Xetra and Frankfurt 2026",
+    sourceNote: "Non-trading days for Frankfurter Wertpapierbörse, Xetra and Börse Frankfurt. Ascension Day, Whit Monday and Corpus Christi are public holidays with regular trading in 2026 and must not be included as closed. December 30, 2026 may have deviating hours, but is not treated as full market closure in this version. Dates are local Germany dates.",
+    verifiedAt: "2026-06-20"
+  },
+  SIX:  { closed: [], earlyClose: {} },
+  LSE: {
+    closed: [
+      "2026-01-01", // New Year's Day
+      "2026-04-03", // Good Friday
+      "2026-04-06", // Easter Monday
+      "2026-05-04", // Early May Bank Holiday
+      "2026-05-25", // Spring Bank Holiday
+      "2026-08-31", // Summer Bank Holiday
+      "2026-12-25", // Christmas Day
+      "2026-12-28"  // Boxing Day substitute day
+    ],
+    earlyClose: {},
+    source: "London Stock Exchange - Business Days / Settlement Calendar 2026",
+    sourceNote: "Based on FTSE100_GBP calendar for FTSE 100 Securities on SET1 in trading currency sterling. Dates are local London dates.",
+    verifiedAt: "2026-06-20"
+  },
+  B3: {
+    closed: [
+      "2026-01-01", // Confraternização Universal
+      "2026-02-16", // Carnaval
+      "2026-02-17", // Carnaval
+      "2026-04-03", // Sexta-feira Santa
+      "2026-04-21", // Tiradentes
+      "2026-05-01", // Dia do Trabalho
+      "2026-06-04", // Corpus Christi
+      "2026-09-07", // Independência do Brasil
+      "2026-10-12", // Nossa Senhora Aparecida
+      "2026-11-02", // Finados
+      "2026-11-20", // Dia Nacional de Zumbi e Consciência Negra
+      "2026-12-24", // Véspera de Natal — sem sessão de negociação
+      "2026-12-25", // Natal
+      "2026-12-31"  // Véspera de Ano Novo — sem sessão de negociação
+    ],
+    earlyClose: {},
+    source: "B3 - Calendário de feriados e funcionamento em 2026",
+    sourceNote: "Baseado no calendário informado; conferir versão vigente do Ofício Circular 003-2026-VNC antes de publicação final.",
+    verifiedAt: "2026-06-20"
+  },
+  NYSE: {
+    closed: [
+      "2026-01-01", // New Year's Day
+      "2026-01-19", // Martin Luther King, Jr. Day
+      "2026-02-16", // Washington's Birthday / Presidents' Day
+      "2026-04-03", // Good Friday
+      "2026-05-25", // Memorial Day
+      "2026-06-19", // Juneteenth National Independence Day
+      "2026-07-03", // Independence Day observed
+      "2026-09-07", // Labor Day
+      "2026-11-26", // Thanksgiving Day
+      "2026-12-25"  // Christmas Day
+    ],
+    earlyClose: {
+      "2026-11-27": "13:00", // Day after Thanksgiving
+      "2026-12-24": "13:00"  // Christmas Eve
+    },
+    source: "NYSE - Holidays & Trading Hours 2026",
+    sourceNote: "NYSE markets close early at 1:00 p.m. ET on 2026-11-27 and 2026-12-24. Current app version records earlyClose but does not yet apply it unless early-close logic is implemented.",
+    verifiedAt: "2026-06-20"
+  },
+  TSX:  { closed: [], earlyClose: {} },
+  CME:  { closed: [], earlyClose: {} }
+};
+
+// data local da bolsa no formato AAAA-MM-DD
+function marketDateKey(now, tz){
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz, year:"numeric", month:"2-digit", day:"2-digit"
+  }).formatToParts(now);
+  const y = parts.find(p=>p.type==="year").value;
+  const m = parts.find(p=>p.type==="month").value;
+  const d = parts.find(p=>p.type==="day").value;
+  return `${y}-${m}-${d}`;
+}
+// dia da semana local da bolsa (Sun..Sat)
+function marketWeekday(now, tz){
+  return new Intl.DateTimeFormat("en-US", { timeZone: tz, weekday:"short" }).format(now);
+}
+function isMarketWeekend(now, tz){
+  const wd = marketWeekday(now, tz);
+  return wd==="Sat" || wd==="Sun";
+}
+function isMarketHoliday(m, now){
+  if(!m.calendar || !m.tz) return false;
+  const cal = EXCHANGE_CALENDARS[m.calendar];
+  if(!cal) return false;
+  const dateKey = marketDateKey(now, m.tz);
+  return Array.isArray(cal.closed) && cal.closed.includes(dateKey);
+}
+// abertura "de verdade": horário + não fim de semana local + não feriado
+function isOpenNow(m, now){
+  if(m.tz && isMarketWeekend(now, m.tz)) return false;
+  if(isMarketHoliday(m, now)) return false;
+  const utcH = now.getUTCHours() + now.getUTCMinutes()/60 + now.getUTCSeconds()/3600;
+  return isOpenUTC(m, utcH);
+}
+
+// ===== Cotações ao vivo (via Cloudflare Worker proxy) =====
+// Cole abaixo a URL do seu Worker (sem token). Enquanto estiver vazia,
+// o app funciona normalmente e os arcos abertos usam a cor padrão.
+// ↓↓↓ COLE A URL DO SEU WORKER ENTRE AS ASPAS ABAIXO ↓↓↓
+const QUOTES_URL = "https://tgp-market-quotes.jpauloct.workers.dev";
+// ↑↑↑ ex: "https://tgp-quotes.seu-usuario.workers.dev" (sem barra no final) ↑↑↑
+
+let marketQuotes = {};
+async function fetchMarketQuotes(){
+  // só busca se a URL real do Worker já tiver sido colada
+  if(!QUOTES_URL || QUOTES_URL==="COLE_AQUI_A_URL_REAL_DO_WORKER") return;
+  try{
+    const res = await fetch(QUOTES_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("quotes_http_"+res.status);
+    const data = await res.json();
+    marketQuotes = (data && typeof data==="object") ? data : {};
+    if(_DEBUG_ACTIVE) console.log("[TGP] cotações:", marketQuotes);
+  }catch(e){
+    console.warn("Falha ao buscar cotações:", e);
+  }
+}
+
+// cor do arco quando o mercado está ABERTO.
+// Nesta etapa, só saopaulo usa cotação; os demais usam a cor padrão.
+function marketArcColor(m){
+  if(m.id !== "saopaulo") return "var(--accent)";
+  const q = marketQuotes[m.id];
+  if(!q || q.changePct === null || q.changePct === undefined) return "var(--mkt-unknown)";
+  const pct = Number(q.changePct);
+  if(!Number.isFinite(pct)) return "var(--mkt-unknown)";
+  if(pct >  0.05) return "var(--mkt-up)";
+  if(pct < -0.05) return "var(--mkt-down)";
+  return "var(--mkt-flat)";
+}
+
+let hourHand,secondHand;
+function rebuild(){
+  svg.innerHTML="";
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:196,fill:"var(--ring-bg)"}));
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:188,fill:"var(--face)"}));
+  for(let h=1;h<=24;h++){
+    const ang=hourToAngle(h),major=h%6===0;
+    const a=polar(CX,CY,180,ang),b=polar(CX,CY,major?170:175,ang);
+    svg.appendChild(el("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,
+      stroke:major?"var(--tick-major)":"var(--tick)","stroke-width":major?1.6:1}));
+    const np=polar(CX,CY,188,ang);
+    const t=el("text",{x:np.x,y:np.y,"text-anchor":"middle","dominant-baseline":"central",
+      id:"hn-"+h, class:"hour-num"+(major?" cardinal":"")});
+    t.textContent=h; svg.appendChild(t);
+  }
+  const sel=ALL_MARKETS.filter(m=>state.selected.has(m.id));
+  const n=sel.length;
+  const rOuter=168,rInner=Math.max(70,168-(n-1)*(n>8?12:16));
+  const step=n>1?(rOuter-rInner)/(n-1):0;
+  sel.forEach((m,i)=>{
+    const radius=n>1?rOuter-i*step:130;
+    const lo=toLocal(m.open),lc=toLocal(m.close);
+    svg.appendChild(el("path",{d:arcPath(CX,CY,radius,0.01,23.99),fill:"none",
+      stroke:"var(--ring-track)","stroke-width":ARC_W,"stroke-linecap":"butt"}));
+    svg.appendChild(el("path",{d:arcPath(CX,CY,radius,lo,lc),fill:"none",
+      "stroke-width":ARC_W,"stroke-linecap":"round",class:"open-arc",id:"arc-"+m.id}));
+
+    // caminho invisível para o texto curvo correr sobre o arco
+    let span=(lc-lo+24)%24;
+    // ângulo do meio do arco decide se estamos na metade de cima ou de baixo
+    const midAng=(hourToAngle((lo+span/2)%24)+360)%360;
+    const bottom = midAng>0 && midAng<180; // metade inferior do círculo
+    // metade de cima: caminho normal, texto começa no início do arco.
+    // metade de baixo: caminho reverso (anti-horário) e texto centralizado,
+    // para o nome ficar em posição normal de leitura, dentro do arco.
+    const pid="lblpath-"+m.id;
+    // o arco VISUAL continua em radius; só o caminho do TEXTO recebe o offset.
+    const labelRadius = bottom ? radius - LABEL_RADIUS_OFFSET : radius + LABEL_RADIUS_OFFSET;
+    const labelPathD = bottom
+      ? arcPathReverse(CX,CY,labelRadius,lo,lc)
+      : arcPath(CX,CY,labelRadius,lo,lc);
+    const lpath=el("path",{id:pid,d:labelPathD,fill:"none",stroke:"none"});
+    svg.appendChild(lpath);
+
+    const txt=el("text",{class:"arc-label",id:"lbl-"+m.id});
+    const tp=el("textPath",{href:"#"+pid,
+      startOffset: bottom ? "96%" : "4%",
+      "text-anchor": bottom ? "end" : "start",
+      dy: bottom ? "-0.10em" : "0.34em"});
+    tp.textContent=mlabel(m);
+    txt.appendChild(tp);
+    svg.appendChild(txt);
+  });
+  hourHand=el("line",{x1:CX,y1:CY,x2:CX,y2:CY-66,stroke:"var(--hand)","stroke-width":5,"stroke-linecap":"round"});
+  secondHand=el("line",{x1:CX,y1:CY+22,x2:CX,y2:CY-150,stroke:"var(--second)","stroke-width":1.3,"stroke-linecap":"round"});
+  svg.appendChild(hourHand); svg.appendChild(secondHand);
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:5.5,fill:"var(--center)"}));
+}
+function update(){
+  const now=getNow();
+  const utcH=now.getUTCHours()+now.getUTCMinutes()/60+now.getUTCSeconds()/3600;
+  const localH=toLocal(utcH);
+  const lh=Math.floor(localH),lm=Math.floor((localH-lh)*60);
+  hourHand.setAttribute("transform",`rotate(${hourToAngle(localH)+90} ${CX} ${CY})`);
+  const s=now.getUTCSeconds()+now.getUTCMilliseconds()/1000;
+  secondHand.setAttribute("transform",`rotate(${s/60*360} ${CX} ${CY})`);
+  let anyOpen=false,openNames=[];
+  const sel=ALL_MARKETS.filter(m=>state.selected.has(m.id));
+  sel.forEach(m=>{
+    const arc=document.getElementById("arc-"+m.id),lbl=document.getElementById("lbl-"+m.id);
+    if(!arc)return;
+    if(isOpenNow(m, now)){ arc.setAttribute("stroke", marketArcColor(m));
+      arc.style.filter="drop-shadow(0 0 5px var(--open-glow))"; lbl.classList.add("open");
+      anyOpen=true; openNames.push(mlabel(m));
+    } else { arc.setAttribute("stroke","var(--ring-off)"); arc.style.filter="none"; lbl.classList.remove("open"); }
+  });
+  const pad=n=>String(n).padStart(2,"0");
+  // destaca o número da hora vigente no anel
+  const curHourNum=Math.floor(localH)===0?24:Math.floor(localH);
+  for(let hh=1;hh<=24;hh++){
+    const node=document.getElementById("hn-"+hh);
+    if(node) node.classList.toggle("now", hh===curHourNum);
+  }
+  document.getElementById("utc-foot").textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}`;
+  const status=document.getElementById("status"),statusText=document.getElementById("status-text");
+  if(anyOpen){ status.classList.remove("closed");
+    statusText.textContent=openNames.length>1?`Aberto \u00b7 ${openNames.length} mercados`:`Aberto \u00b7 ${openNames[0]}`;
+  } else { status.classList.add("closed"); statusText.textContent="Mercados fechados"; }
+  requestAnimationFrame(update);
+}
+function tzName(off){ const sign=off>=0?"+":"-",a=Math.abs(off),h=Math.floor(a),m=Math.round((a-h)*60);
+  return `GMT${sign}${h}${m?":"+String(m).padStart(2,"0"):""}`; }
+function refreshTzLabels(){
+  document.getElementById("event-text").textContent=`Seu fuso: ${tzName(state.tzOffset)} \u00b7 ${state.selected.size} mercados`;
+}
+function buildSettings(){
+  const sel=document.getElementById("tz-select");
+  TZ_OPTIONS.forEach(o=>{ const opt=document.createElement("option");
+    opt.value=o; opt.textContent=tzName(o);
+    if(Math.abs(o-state.tzOffset)<0.01) opt.selected=true; sel.appendChild(opt); });
+  sel.addEventListener("change",e=>{ state.tzOffset=parseFloat(e.target.value); rebuild(); refreshTzLabels(); });
+  const list=document.getElementById("mkt-list"),pad=n=>String(n).padStart(2,"0");
+  ALL_MARKETS.forEach(m=>{
+    const item=document.createElement("div");
+    item.className="mkt-item"+(state.selected.has(m.id)?" on":"");
+    const oh=Math.floor(m.open),om=Math.round((m.open-oh)*60),ch=Math.floor(m.close),cm=Math.round((m.close-ch)*60);
+    item.innerHTML=`<div class="sw">${state.selected.has(m.id)?"\u2713":""}</div>
+      <div class="nm">${m.name}<span class="idx"> \u00b7 ${m.index}</span></div>
+      <div class="hrs">${pad(oh)}:${pad(om)}\u2013${pad(ch)}:${pad(cm)} UTC</div>`;
+    item.addEventListener("click",()=>{
+      if(state.selected.has(m.id)){ if(state.selected.size<=1)return;
+        state.selected.delete(m.id); item.classList.remove("on"); item.querySelector(".sw").textContent="";
+      } else { state.selected.add(m.id); item.classList.add("on"); item.querySelector(".sw").textContent="\u2713"; }
+      rebuild(); refreshTzLabels();
+    });
+    list.appendChild(item);
+  });
+
+  // seletor cidade / índice
+  const seg=document.getElementById("label-seg");
+  const segBtns=seg.querySelectorAll(".seg-btn");
+  function syncSeg(){ segBtns.forEach(b=>b.classList.toggle("active", b.dataset.mode===state.labelMode)); }
+  segBtns.forEach(b=>b.addEventListener("click",()=>{
+    state.labelMode=b.dataset.mode; syncSeg(); rebuild(); refreshTzLabels();
+  }));
+  syncSeg();
+}
+// ---- Matrix digital rain ----
+const rain=document.getElementById("rain");
+const rctx=rain.getContext("2d");
+const GLYPHS="01ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ｜ﾁｺ$+*<>".split("");
+let cols=[], colW=14, running=false, rafRain;
+function sizeRain(){
+  rain.width=window.innerWidth; rain.height=window.innerHeight;
+  const n=Math.floor(rain.width/colW);
+  cols=Array.from({length:n},()=>Math.random()*-rain.height);
+}
+let lastStep=0;
+const RAIN_STEP_MS=115; // intervalo entre quedas — maior = mais lenta
+function drawRain(ts){
+  if(!lastStep) lastStep=ts||0;
+  const advance=(ts-lastStep)>=RAIN_STEP_MS;
+  if(advance){
+    lastStep=ts;
+    rctx.fillStyle="rgba(0,0,0,0.10)";
+    rctx.fillRect(0,0,rain.width,rain.height);
+    rctx.font=colW+"px monospace";
+    for(let i=0;i<cols.length;i++){
+      const ch=GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+      const x=i*colW, y=cols[i];
+      rctx.fillStyle="#39ff14";
+      rctx.fillText(ch,x,y);
+      rctx.fillStyle="rgba(57,255,20,0.35)";
+      rctx.fillText(GLYPHS[Math.floor(Math.random()*GLYPHS.length)],x,y-colW*1.5);
+      if(y>rain.height && Math.random()>0.975) cols[i]=0;
+      else cols[i]=y+colW;
+    }
+  }
+  rafRain=requestAnimationFrame(drawRain);
+}
+function startRain(){ if(running)return; running=true; lastStep=0; sizeRain();
+  rctx.fillStyle="#000"; rctx.fillRect(0,0,rain.width,rain.height); requestAnimationFrame(drawRain); }
+function stopRain(){ running=false; cancelAnimationFrame(rafRain); rctx.clearRect(0,0,rain.width,rain.height); }
+window.addEventListener("resize",()=>{ if(running) sizeRain(); });
+
+
+function openSheet(){ overlay.classList.add("show"); sheet.classList.add("show"); }
+function closeSheet(){ overlay.classList.remove("show"); sheet.classList.remove("show"); }
+document.getElementById("open-settings").addEventListener("click",openSheet);
+document.getElementById("done-btn").addEventListener("click",closeSheet);
+overlay.addEventListener("click",closeSheet);
+const THEMES=[
+  {cls:"",      label:"\u25D0 Escuro"},
+  {cls:"light", label:"\u25D1 Claro"},
+  {cls:"matrix",label:"\u25A0 Matrix"},
+];
+let themeIdx=0;
+const toggleBtn=document.getElementById("toggle");
+toggleBtn.textContent=THEMES[themeIdx].label;
+toggleBtn.addEventListener("click",()=>{
+  themeIdx=(themeIdx+1)%THEMES.length;
+  document.documentElement.classList.remove("light","matrix");
+  const t=THEMES[themeIdx];
+  if(t.cls) document.documentElement.classList.add(t.cls);
+  toggleBtn.textContent=t.label;
+  if(t.cls==="matrix") startRain(); else stopRain();
+});
+buildSettings(); rebuild(); refreshTzLabels(); update();
+// cotações: busca ao carregar e atualiza a cada 2 minutos (nunca dentro do update)
+fetchMarketQuotes();
+setInterval(fetchMarketQuotes, 120000);
+// selo visual discreto quando o modo debug está ativo
+if(_DEBUG_ACTIVE){
+  const tag=document.createElement("div");
+  tag.textContent="DEBUG: "+_debugOverride();
+  tag.style.cssText="position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:99;"+
+    "background:#ff4d4d;color:#fff;font:600 11px/1 monospace;padding:5px 10px;border-radius:6px;"+
+    "letter-spacing:0.04em;pointer-events:none;opacity:0.9;";
+  document.body.appendChild(tag);
+}
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  MÓDULO DE NOTÍCIAS (Fase 1 — sem tape, sem requestAnimationFrame)
+//  Estado e funções com prefixo tgp* para não colidir com o relógio.
+// ═══════════════════════════════════════════════════════════════════
+const TGP_NEWS_REFRESH = 15 * 60 * 1000; // 15 min
+let tgpNewsCache = (function(){
+  try { const n = JSON.parse(localStorage.getItem("tgp_news_cache_v1") || "[]"); return Array.isArray(n)?n:[]; }
+  catch(e){ return []; }
+})();
+let tgpNewsLastFetch = 0;
+let tgpNewsFetching = false;
+
+function tgpSetNewsStatus(msg){
+  const s=document.getElementById("news-status");
+  if(s) s.textContent = msg || "";
+}
+
+function tgpFetchNews(){
+  if(tgpNewsFetching) return;
+  const now = Date.now();
+  if(now - tgpNewsLastFetch < TGP_NEWS_REFRESH && tgpNewsCache.length) { tgpRenderNewsPanel(); return; }
+  tgpNewsFetching = true;
+  tgpNewsLastFetch = now;
+  if(!tgpNewsCache.length) tgpSetNewsStatus("Buscando notícias...");
+
+  const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
+  const feeds = [
+    {url:"https://www.infomoney.com.br/feed/",                     label:"InfoMoney",  type:"company", lang:"pt"},
+    {url:"https://valoreconomico.globo.com/rss/financas/",         label:"Valor",      type:"company", lang:"pt"},
+    {url:"https://agenciabrasil.ebc.com.br/rss/economia/feed.xml", label:"Ag.Brasil",  type:"macro",   lang:"pt"},
+    {url:"https://exame.com/invest/feed/",                         label:"Exame",      type:"company", lang:"pt"},
+    {url:"https://www.moneytimes.com.br/feed/",                    label:"MoneyTimes", type:"macro",   lang:"pt"},
+    {url:"https://www.cnbc.com/id/10000664/device/rss/rss.html",   label:"CNBC",       type:"macro",   lang:"en"},
+    {url:"https://feeds.bbci.co.uk/news/business/rss.xml",         label:"BBC",        type:"macro",   lang:"en"}
+  ];
+  const TICKERS = ["PETR4","VALE3","ITUB4","BBDC4","ABEV3","B3SA3","WEGE3","SUZB3"];
+
+  let allNews=[], completed=0, total=feeds.length, anyOk=false;
+
+  function tgpTryDone(){
+    completed++;
+    if(completed < total) return;
+    tgpNewsFetching = false;
+    if(!anyOk && !allNews.length){
+      // todas as fontes falharam
+      if(tgpNewsCache.length){
+        tgpSetNewsStatus("Não foi possível atualizar agora. Exibindo últimas notícias salvas.");
+      } else {
+        tgpSetNewsStatus("");
+        const list=document.getElementById("news-list");
+        if(list) list.innerHTML='<div class="news-empty">Não foi possível carregar notícias agora. Tente novamente em instantes.</div>';
+      }
+      return;
+    }
+    allNews.sort((a,b)=> b.ts - a.ts);
+    const seen={};
+    tgpNewsCache = allNews.filter(n=>{
+      const key=n.title.slice(0,40);
+      if(seen[key]) return false; seen[key]=true; return true;
+    }).slice(0,30);
+    tgpNewsCache.forEach((n,i)=>{ n.id=i+1; });
+    try { localStorage.setItem("tgp_news_cache_v1", JSON.stringify(tgpNewsCache)); } catch(e){}
+    tgpSetNewsStatus(tgpNewsCache.length + " notícias");
+    tgpRenderNewsPanel();
+  }
+
+  feeds.forEach(feed=>{
+    fetch(RSS2JSON + encodeURIComponent(feed.url) + "&count=10")
+      .then(r=> r.json())
+      .then(data=>{
+        if(data && (data.status==="ok" || data.items)) anyOk=true;
+        (data.items||[]).forEach(item=>{
+          const title=(item.title||"").trim();
+          const link=item.link||item.guid||"";
+          if(!title || title.length<10) return;
+          const lower=title.toLowerCase();
+          const isIntl = feed.lang==="en";
+          const blocked=/iphone|swarovski|bracelete|vinho|celular|notebook|desconto|oferta|promocao|black friday|cupom/.test(lower);
+          if(blocked) return;
+          let relevant;
+          if(isIntl){
+            relevant=/market|stock|economy|gdp|inflation|fed|rate|bank|trade|tariff|bond|oil|gold|dollar|euro|china|recession|growth|debt|deficit|sanction|geopolit|opec|treasury|nasdaq|dow|s&p|wall street|interest|central bank|imf|emerging/.test(lower);
+          } else {
+            relevant=/bolsa|ibovespa|selic|banco central|juros|cvm|acoes|acao|mercado|b3|petrobras|vale|itau|bradesco|ambev|weg|embraer|dividendo|resultado|lucro|receita|economia|inflacao|cambio|dolar|credito|bovespa|investimento|fiscal|fazenda|pib|copom|tesouro|fundo|fii|etf|commodities|petroleo|exportacao/.test(lower);
+          }
+          if(!relevant) return;
+          let ticker="";
+          TICKERS.forEach(t=>{ if(title.toUpperCase().indexOf(t)>=0) ticker=t; });
+          const ts=item.pubDate ? new Date(item.pubDate).getTime() : (Date.now()-allNews.length*60000);
+          const mins=Math.floor((Date.now()-ts)/60000);
+          const timeStr= mins<1?"agora": mins<60?"há "+mins+"min": mins<1440?"há "+Math.floor(mins/60)+"h":"há "+Math.floor(mins/1440)+"d";
+          let desc=(item.description||item.content||"").replace(/<[^>]+>/g,"").trim();
+          if(desc.length>800) desc=desc.slice(0,800)+"...";
+          allNews.push({ title, source:feed.label, type:ticker?"company":feed.type, ticker, time:timeStr, url:link, ts, desc, lang:feed.lang||"pt" });
+        });
+        tgpTryDone();
+      })
+      .catch(()=> tgpTryDone());
+  });
+}
+
+function tgpRenderNewsPanel(){
+  const list=document.getElementById("news-list");
+  if(!list) return;
+  if(!tgpNewsCache.length){
+    list.innerHTML='<div class="news-empty">Buscando notícias...</div>';
+    return;
+  }
+  list.innerHTML="";
+  tgpNewsCache.forEach(item=>{
+    const card=document.createElement("div");
+    card.className = "news-card" + (item.type==="macro" ? " macro" : "");
+    card.id="tgp-ni-"+item.id;
+
+    const top=document.createElement("div");
+    top.className="news-card-top";
+    const badge=document.createElement("span");
+    badge.className="news-badge";
+    badge.textContent=item.ticker || item.source || "?";
+    const time=document.createElement("span");
+    time.className="news-time";
+    time.textContent=item.time||"";
+    top.appendChild(badge); top.appendChild(time);
+
+    const title=document.createElement("div");
+    title.className="news-title";
+    title.textContent=item.title||"";
+
+    const btn=document.createElement("button");
+    btn.className="news-expand-btn"; btn.textContent="Ver resumo";
+
+    const box=document.createElement("div");
+    box.className="news-summary-box";
+
+    card.appendChild(top); card.appendChild(title); card.appendChild(btn); card.appendChild(box);
+    btn.onclick=function(){ tgpFetchSummary(item, card); };
+    list.appendChild(card);
+  });
+}
+
+function tgpFetchSummary(item, cardEl){
+  const btn=cardEl.querySelector(".news-expand-btn");
+  const box=cardEl.querySelector(".news-summary-box");
+  if(!btn || !box) return;
+  if(box.style.display==="block"){ box.style.display="none"; btn.textContent="Ver resumo"; return; }
+  tgpShowSummaryInCard(cardEl, item);
+}
+
+function tgpShowSummaryInCard(cardEl, item){
+  const btn=cardEl.querySelector(".news-expand-btn");
+  const box=cardEl.querySelector(".news-summary-box");
+  if(!btn || !box) return;
+  box.style.display="block"; box.innerHTML="";
+
+  function renderSummary(text){
+    box.innerHTML="";
+    const p=document.createElement("p");
+    p.textContent=text;
+    box.appendChild(p);
+    if(item.url){
+      const a=document.createElement("a");
+      a.href=item.url; a.target="_blank"; a.rel="noopener";
+      a.textContent="Ler notícia completa";
+      box.appendChild(a);
+    }
+    btn.textContent="Fechar"; btn.disabled=false;
+  }
+
+  if(item.desc && item.desc.length>80 && item.desc!==item.title){ renderSummary(item.desc); return; }
+
+  btn.textContent="Carregando..."; btn.disabled=true;
+  if(!item.url){ renderSummary(item.title); return; }
+
+  fetch("https://api.allorigins.win/get?url="+encodeURIComponent(item.url))
+    .then(r=> r.json())
+    .then(data=>{
+      const html=data.contents||"";
+      if(!html){ renderSummary(item.title); return; }
+      const doc=new DOMParser().parseFromString(html,"text/html");
+      ["script","style","nav","header","footer","aside","figure","iframe"].forEach(tag=>{
+        const els=doc.querySelectorAll(tag);
+        for(let i=els.length-1;i>=0;i--) els[i].parentNode.removeChild(els[i]);
+      });
+      const paras=doc.querySelectorAll("p, article p, .content p, .article-body p");
+      const texts=[];
+      for(let i=0;i<paras.length;i++){
+        const t=paras[i].textContent.trim();
+        if(t.length>80 && texts.indexOf(t)===-1) texts.push(t);
+        if(texts.length>=5) break;
+      }
+      if(!texts.length){ renderSummary(item.title); return; }
+      let summary=texts.join("\n\n");
+      if(summary.length>900) summary=summary.slice(0,900)+"...";
+      renderSummary(summary);
+    })
+    .catch(()=> renderSummary(item.title));
+}
+
+const tgpNewsOverlay=document.getElementById("news-overlay");
+const tgpNewsSheet=document.getElementById("news-sheet");
+function tgpOpenNewsSheet(){
+  closeSheet(); // garante que o painel de Ajustes não fique aberto junto
+  tgpNewsOverlay.classList.add("show"); tgpNewsSheet.classList.add("show");
+  // reseta o scroll ao abrir
+  tgpNewsSheet.scrollTop = 0;
+  const list = document.getElementById("news-list");
+  if(list) list.scrollTop = 0;
+  // mostra cache imediatamente, se houver
+  if(tgpNewsCache.length){ tgpSetNewsStatus(tgpNewsCache.length+" notícias"); tgpRenderNewsPanel(); }
+  // busca só ao abrir, respeitando o throttle de 15 min
+  const stale = (Date.now() - tgpNewsLastFetch) >= TGP_NEWS_REFRESH;
+  if(!tgpNewsCache.length || stale) tgpFetchNews();
+}
+function tgpCloseNewsSheet(){
+  tgpNewsOverlay.classList.remove("show"); tgpNewsSheet.classList.remove("show");
+}
+document.getElementById("open-news").addEventListener("click", tgpOpenNewsSheet);
+document.getElementById("news-done-btn").addEventListener("click", tgpCloseNewsSheet);
+tgpNewsOverlay.addEventListener("click", tgpCloseNewsSheet);
+
+// ═══════════════════════════════════════════════════════════════════
+//  TELA DE GUERRA — Fase 1A (MOCK VISUAL, dados falsos)
+//  Estrutura visual apenas. Nenhum fetch real ainda; o JSON virá do
+//  Worker numa etapa seguinte, no MESMO formato que warMockData() produz.
+// ═══════════════════════════════════════════════════════════════════
+
+// Formato padronizado que o Worker vai entregar (o app só desenha isto):
+//  { sections: [ { title, kind, items:[ {label,value,tone,changePct,ref,sub} ] } ] }
+//  kind "market" = dado que muda no dia (variação colorida)
+//  kind "official" = dado oficial com data de referência (sem variação intradiária)
+function warMockData(){
+  return {
+    updatedAt: new Date(),
+    sections: [
+      {
+        title: "Panorama Econômico", layout: "cards", cols: 3,
+        items: [
+          { label: "SELIC", value: "14,50%", tone: "official", ref: "ref. 30/04/2026", sub: "ao ano" },
+          { label: "IPCA 12 meses", value: "4,14%", tone: "official", ref: "ref. mar/2026" },
+          { label: "IGP-M 12 meses", value: "3,67%", tone: "official", ref: "ref. mar/2026" },
+        ]
+      },
+      {
+        title: "Mercados hoje", layout: "columns",
+        columns: [
+          { head: "Índice & Moedas", items: [
+            { label: "IBOV", value: "137.482", tone: "up",   changePct: 0.84 },
+            { label: "USD/BRL", value: "R$ 4,99", tone: "down", changePct: -0.35 },
+            { label: "EUR/BRL", value: "R$ 5,41", tone: "up",   changePct: 0.12 },
+          ]},
+          { head: "Tesouro Prefixado", items: [
+            { label: "Prefixado 2029", value: "13,80%", tone: "down", changePct: -0.06 },
+            { label: "Prefixado 2032", value: "13,95%", tone: "up",   changePct: 0.04 },
+            { label: "Prefixado 2037", value: "14,02%", tone: "up",   changePct: 0.09, sub: "com cupom" },
+          ]},
+          { head: "Tesouro IPCA+", items: [
+            { label: "IPCA+ 2029", value: "+7,15%", tone: "up",   changePct: 0.03 },
+            { label: "IPCA+ 2032", value: "+7,02%", tone: "down", changePct: -0.02 },
+            { label: "IPCA+ 2037", value: "+6,88%", tone: "up",   changePct: 0.05, sub: "com cupom" },
+          ]},
+        ]
+      },
+      {
+        title: "COPOM", layout: "list",
+        items: [
+          { name: "Última reunião", val: "16–17/06/2026", when: "past", extra: "decisão: —  ·  ata: em breve" },
+          { name: "Próxima reunião", val: "04–05/08/2026", when: "next" },
+          { name: "Reunião seguinte", val: "15–16/09/2026", when: "later" },
+        ]
+      },
+    ]
+  };
+}
+
+function warToneClass(t){ return t==="up"?"up":t==="down"?"down":t==="official"?"official":"flat"; }
+function warFmtPct(p){ const s=p>0?"+":""; return s+p.toFixed(2).replace(".",",")+"%"; }
+
+
+// ───────── TradingView em cards estáticos (inclusão cirúrgica) ─────────
+// Não altera a lógica de cotações/Worker. Torna alguns cards da Tela de Guerra clicáveis.
+const TV_CHART_SYMBOLS = {
+  IBOV: {
+    title: "IBOVESPA",
+    subtitle: "BMFBOVESPA:IBOV",
+    symbol: "BMFBOVESPA:IBOV"
+  },
+  USDBRL: {
+    title: "USD/BRL",
+    subtitle: "Dólar comercial",
+    symbol: "FX_IDC:USDBRL"
+  },
+  EURBRL: {
+    title: "EUR/BRL",
+    subtitle: "Euro / Real",
+    symbol: "FX_IDC:EURBRL"
+  },
+
+  // Futuros DI — TradingView usa ano cheio no símbolo.
+  DI_2029: {
+    title: "DI jan/2029",
+    subtitle: "BMFBOVESPA:DI1F2029",
+    symbol: "BMFBOVESPA:DI1F2029"
+  },
+  DI_2032: {
+    title: "DI jan/2032",
+    subtitle: "BMFBOVESPA:DI1F2032",
+    symbol: "BMFBOVESPA:DI1F2032"
+  },
+  DI_2037: {
+    title: "DI jan/2037",
+    subtitle: "BMFBOVESPA:DI1F2037",
+    symbol: "BMFBOVESPA:DI1F2037"
+  },
+
+  // Futuros DAP — cupom de IPCA. TradingView usa ano cheio no símbolo.
+  DAP_2029: {
+    title: "DAP mai/2029",
+    subtitle: "BMFBOVESPA:DAPK2029",
+    symbol: "BMFBOVESPA:DAPK2029"
+  },
+  DAP_2032: {
+    title: "DAP ago/2032",
+    subtitle: "BMFBOVESPA:DAPQ2032",
+    symbol: "BMFBOVESPA:DAPQ2032"
+  },
+  DAP_2037: {
+    title: "DAP mai/2037",
+    subtitle: "BMFBOVESPA:DAPK2037",
+    symbol: "BMFBOVESPA:DAPK2037"
+  },
+
+  // Contínuos, reservados para uso futuro se forem exibidos como cards.
+  DI_CONT: {
+    title: "DI contínuo",
+    subtitle: "BMFBOVESPA:DI11!",
+    symbol: "BMFBOVESPA:DI11!"
+  },
+  DAP_CONT: {
+    title: "DAP contínuo",
+    subtitle: "BMFBOVESPA:DAP1!",
+    symbol: "BMFBOVESPA:DAP1!"
+  }
+};
+
+function tgpWarChartKey(label){
+  const raw = String(label || "").trim();
+  const s = raw
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "");
+
+  if (s === "IBOV" || s === "IBOVESPA") return "IBOV";
+  if (s === "USD/BRL" || s === "USDBRL" || s === "DOLAR") return "USDBRL";
+  if (s === "EUR/BRL" || s === "EURBRL" || s === "EURO") return "EURBRL";
+
+  if (s === "DIJAN/2029" || s === "DIJAN2029" || s === "DI1F2029") return "DI_2029";
+  if (s === "DIJAN/2032" || s === "DIJAN2032" || s === "DI1F2032") return "DI_2032";
+  if (s === "DIJAN/2037" || s === "DIJAN2037" || s === "DI1F2037") return "DI_2037";
+
+  if (s === "DAPMAI/2029" || s === "DAPMAI2029" || s === "DAPK2029") return "DAP_2029";
+  if (s === "DAPAGO/2032" || s === "DAPAGO2032" || s === "DAPQ2032") return "DAP_2032";
+  if (s === "DAPMAI/2037" || s === "DAPMAI2037" || s === "DAPK2037") return "DAP_2037";
+
+  if (s === "DICONTINUO" || s === "DI11!") return "DI_CONT";
+  if (s === "DAPCONTINUO" || s === "DAP1!") return "DAP_CONT";
+
+  return "";
+}
+
+function openTradingViewChart(key){
+  const cfg = TV_CHART_SYMBOLS[key];
+  if (!cfg) return;
+
+  const screen = document.getElementById("tv-chart-screen");
+  const container = document.getElementById("tv-chart-container");
+  const title = document.getElementById("tv-chart-title");
+  const subtitle = document.getElementById("tv-chart-subtitle");
+
+  if (!screen || !container) return;
+
+  if (title) title.textContent = cfg.title;
+  if (subtitle) subtitle.textContent = cfg.subtitle;
+
+  const uid = "tv_chart_" + Date.now();
+  container.innerHTML = '<div id="' + uid + '" style="width:100%;height:100%;"></div>';
+
+  screen.classList.add("show");
+
+  if (!window.TradingView || !TradingView.widget) {
+    container.innerHTML =
+      '<div style="padding:18px;color:var(--txt-dim);font-size:13px;line-height:1.6">TradingView não carregou. Verifique se o script https://s3.tradingview.com/tv.js está presente e se o navegador não bloqueou o carregamento.</div>';
+    return;
+  }
+
+  new TradingView.widget({
+    container_id: uid,
+    autosize: true,
+    symbol: cfg.symbol,
+    interval: "D",
+    timezone: "America/Sao_Paulo",
+    theme: document.documentElement.classList.contains("light") ? "light" : "dark",
+    style: "1",
+    locale: "br",
+    toolbar_bg: "#0a0e14",
+    enable_publishing: false,
+    allow_symbol_change: false,
+    save_image: false,
+    hide_side_toolbar: false,
+    withdateranges: true
+  });
+}
+
+function closeTradingViewChart(){
+  const screen = document.getElementById("tv-chart-screen");
+  const container = document.getElementById("tv-chart-container");
+
+  if (screen) screen.classList.remove("show");
+  if (container) container.innerHTML = "";
+}
+
+
+function warRenderCard(it){
+  const card=document.createElement("div");
+  card.className="war-card "+warToneClass(it.tone);
+  const chartKey=tgpWarChartKey(it.label);
+  if(chartKey){
+    card.classList.add("tv-clickable");
+    card.setAttribute("role","button");
+    card.setAttribute("tabindex","0");
+    card.setAttribute("title","Abrir gráfico no TradingView");
+    card.setAttribute("onclick", "openTradingViewChart('" + chartKey + "')");
+    card.addEventListener("keydown",e=>{
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openTradingViewChart(chartKey); }
+    });
+  }
+  const lbl=document.createElement("div"); lbl.className="war-card-label"; lbl.textContent=it.label;
+  const val=document.createElement("div"); val.className="war-card-value"; val.textContent=it.value;
+  const meta=document.createElement("div"); meta.className="war-card-meta";
+  if(typeof it.changePct==="number"){
+    const chg=document.createElement("span");
+    chg.className="war-chg "+(it.changePct>0.02?"up":it.changePct<-0.02?"down":"flat");
+    chg.textContent=warFmtPct(it.changePct);
+    meta.appendChild(chg);
+  }
+  if(it.sub){ const s=document.createElement("span"); s.className="war-ref"; s.textContent=it.sub; meta.appendChild(s); }
+  if(it.ref){ const r=document.createElement("span"); r.className="war-ref"; r.textContent=it.ref; meta.appendChild(r); }
+  card.appendChild(lbl); card.appendChild(val);
+  if(meta.childNodes.length) card.appendChild(meta);
+  return card;
+}
+
+function warRenderListCard(items){
+  const card=document.createElement("div");
+  card.className="war-card official wide";
+  items.forEach(it=>{
+    const row=document.createElement("div");
+    row.className="war-list-row" + (it.when?(" "+it.when):"") + (it.extra?" col":"");
+    if(it.extra){
+      // linha com data em cima e espaço reservado (decisão/ata) embaixo
+      const top=document.createElement("div"); top.className="war-list-rowtop";
+      const nm=document.createElement("div"); nm.className="war-list-name"; nm.textContent=it.name;
+      const v=document.createElement("div"); v.className="war-list-val"; v.textContent=it.val;
+      top.appendChild(nm); top.appendChild(v);
+      const ex=document.createElement("div"); ex.className="war-copom-extra"; ex.textContent=it.extra;
+      row.appendChild(top); row.appendChild(ex);
+    } else {
+      const left=document.createElement("div");
+      const nm=document.createElement("div"); nm.className="war-list-name"; nm.textContent=it.name;
+      left.appendChild(nm);
+      if(it.sub){ const sb=document.createElement("div"); sb.className="war-list-sub"; sb.textContent=it.sub; left.appendChild(sb); }
+      const v=document.createElement("div"); v.className="war-list-val"; v.textContent=it.val;
+      row.appendChild(left); row.appendChild(v);
+    }
+    card.appendChild(row);
+  });
+  return card;
+}
+
+// tabela com cara de card: cabeçalho de anos + linhas (indicador × valores por ano)
+function warRenderTable(section){
+  const card=document.createElement("div");
+  card.className="war-card official wide war-table";
+  const head=document.createElement("div"); head.className="war-trow war-thead";
+  const corner=document.createElement("div"); corner.className="war-tlabel"; corner.textContent="";
+  head.appendChild(corner);
+  (section.columns||[]).forEach(c=>{
+    const th=document.createElement("div"); th.className="war-tcell war-tyear"; th.textContent=c;
+    head.appendChild(th);
+  });
+  card.appendChild(head);
+  (section.rows||[]).forEach(r=>{
+    const row=document.createElement("div"); row.className="war-trow";
+    const lb=document.createElement("div"); lb.className="war-tlabel"; lb.textContent=r.label;
+    row.appendChild(lb);
+    (r.values||[]).forEach(v=>{
+      const cell=document.createElement("div"); cell.className="war-tcell"; cell.textContent=v;
+      row.appendChild(cell);
+    });
+    card.appendChild(row);
+  });
+  if(section.foot){
+    const foot=document.createElement("div"); foot.className="war-tfoot"; foot.textContent=section.foot;
+    card.appendChild(foot);
+  }
+  return card;
+}
+
+function warRender(data){
+  const body=document.getElementById("war-body");
+  body.innerHTML="";
+  data.sections.forEach(section=>{
+    const sec=document.createElement("div"); sec.className="war-section";
+    const title=document.createElement("div"); title.className="war-section-title";
+    title.textContent=section.title;
+    sec.appendChild(title);
+    if(section.layout==="list"){
+      sec.appendChild(warRenderListCard(section.items));
+    } else if(section.layout==="table"){
+      sec.appendChild(warRenderTable(section));
+    } else if(section.layout==="columns"){
+      const cols=document.createElement("div"); cols.className="war-cols";
+      section.columns.forEach(col=>{
+        const c=document.createElement("div"); c.className="war-col";
+        if(col.head){ const h=document.createElement("div"); h.className="war-col-head"; h.textContent=col.head; c.appendChild(h); }
+        col.items.forEach(it=> c.appendChild(warRenderCard(it)));
+        cols.appendChild(c);
+      });
+      sec.appendChild(cols);
+    } else if(section.layout==="cards"){
+      const grid=document.createElement("div");
+      grid.className="war-grid"+(section.cols===4?" cols-4":section.cols===3?" cols-3":section.cols===1?" cols-1":"");
+      section.items.forEach(it=> grid.appendChild(warRenderCard(it)));
+      sec.appendChild(grid);
+    } else {
+      // layout desconhecido: não quebrar a Tela de Guerra; ignorar silenciosamente
+      console.warn("Layout desconhecido na Tela de Guerra:", section.layout);
+    }
+    body.appendChild(sec);
+  });
+  // horário da última atualização (updatedAt vem como ISO string do Worker)
+  const upd=document.getElementById("war-updated");
+  const d = data.updatedAt ? new Date(data.updatedAt) : new Date();
+  const hh=String(d.getHours()).padStart(2,"0");
+  const mm=String(d.getMinutes()).padStart(2,"0");
+  upd.textContent="Atualizado às "+hh+":"+mm;
+}
+
+const warScreen=document.getElementById("war-screen");
+const WAR_ENDPOINT="https://tgp-market-quotes.jpauloct.workers.dev?panel=war";
+// warMockData() fica mantido apenas como referência até validar tudo no domínio real.
+// Em produção a Tela de Guerra usa SEMPRE dados reais do Worker; sem fallback silencioso.
+const WAR_DEBUG_MOCK=false;
+let warLoading=false;
+
+function warShowMessage(msg, isError){
+  const body=document.getElementById("war-body");
+  body.innerHTML="";
+  const box=document.createElement("div");
+  box.className="war-state"+(isError?" err":"");
+  box.textContent=msg;
+  body.appendChild(box);
+}
+
+async function warLoad(){
+  if(warLoading) return;
+  warLoading=true;
+  const upd=document.getElementById("war-updated");
+  warShowMessage("Carregando dados do mercado…", false);
+  upd.textContent="";
+  try{
+    const res=await fetch(WAR_ENDPOINT, { cache: "no-store" });
+    if(!res.ok) throw new Error("http_"+res.status);
+    const data=await res.json();
+    if(!data || !Array.isArray(data.sections) || !data.sections.length) throw new Error("empty");
+    warRender(data);
+  }catch(e){
+    console.warn("[TGP War] Falha ao carregar/renderizar Tela de Guerra:", e);
+    warShowMessage("Não foi possível carregar os dados agora. Toque em ↻ para tentar de novo.", true);
+    upd.textContent="";
+  }finally{
+    warLoading=false;
+  }
+}
+
+function warOpen(){
+  warScreen.classList.add("show");
+  if(WAR_DEBUG_MOCK){ warRender(warMockData()); return; }
+  warLoad();
+}
+function warClose(){ warScreen.classList.remove("show"); }
+function warRefresh(){
+  const btn=document.getElementById("war-refresh");
+  btn.classList.add("spin");
+  setTimeout(()=>btn.classList.remove("spin"), 600);
+  warLoad();
+}
+document.getElementById("open-war").addEventListener("click", warOpen);
+document.getElementById("war-close").addEventListener("click", warClose);
+document.getElementById("war-refresh").addEventListener("click", warRefresh);
+document.getElementById("tv-chart-close").addEventListener("click", closeTradingViewChart);
+</script>
+</body>
+</html>
