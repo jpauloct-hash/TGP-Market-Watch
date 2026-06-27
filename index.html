@@ -1362,7 +1362,7 @@ function warFmtPct(p){ const s=p>0?"+":""; return s+p.toFixed(2).replace(".",","
 
 
 // ───────── TradingView em cards estáticos (inclusão cirúrgica) ─────────
-// Não altera a lógica de cotações/Worker. Apenas torna IBOV, USD/BRL e EUR/BRL clicáveis.
+// Não altera a lógica de cotações/Worker. Torna alguns cards da Tela de Guerra clicáveis.
 const TV_CHART_SYMBOLS = {
   IBOV: {
     title: "IBOVESPA",
@@ -1378,14 +1378,78 @@ const TV_CHART_SYMBOLS = {
     title: "EUR/BRL",
     subtitle: "Euro / Real",
     symbol: "FX_IDC:EURBRL"
+  },
+
+  // Futuros DI — TradingView usa ano cheio no símbolo.
+  DI_2029: {
+    title: "DI jan/2029",
+    subtitle: "BMFBOVESPA:DI1F2029",
+    symbol: "BMFBOVESPA:DI1F2029"
+  },
+  DI_2032: {
+    title: "DI jan/2032",
+    subtitle: "BMFBOVESPA:DI1F2032",
+    symbol: "BMFBOVESPA:DI1F2032"
+  },
+  DI_2037: {
+    title: "DI jan/2037",
+    subtitle: "BMFBOVESPA:DI1F2037",
+    symbol: "BMFBOVESPA:DI1F2037"
+  },
+
+  // Futuros DAP — cupom de IPCA. TradingView usa ano cheio no símbolo.
+  DAP_2029: {
+    title: "DAP mai/2029",
+    subtitle: "BMFBOVESPA:DAPK2029",
+    symbol: "BMFBOVESPA:DAPK2029"
+  },
+  DAP_2032: {
+    title: "DAP ago/2032",
+    subtitle: "BMFBOVESPA:DAPQ2032",
+    symbol: "BMFBOVESPA:DAPQ2032"
+  },
+  DAP_2037: {
+    title: "DAP mai/2037",
+    subtitle: "BMFBOVESPA:DAPK2037",
+    symbol: "BMFBOVESPA:DAPK2037"
+  },
+
+  // Contínuos, reservados para uso futuro se forem exibidos como cards.
+  DI_CONT: {
+    title: "DI contínuo",
+    subtitle: "BMFBOVESPA:DI11!",
+    symbol: "BMFBOVESPA:DI11!"
+  },
+  DAP_CONT: {
+    title: "DAP contínuo",
+    subtitle: "BMFBOVESPA:DAP1!",
+    symbol: "BMFBOVESPA:DAP1!"
   }
 };
 
 function tgpWarChartKey(label){
-  const s = String(label || "").toUpperCase().replace(/\s+/g, "");
+  const raw = String(label || "").trim();
+  const s = raw
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "");
+
   if (s === "IBOV" || s === "IBOVESPA") return "IBOV";
-  if (s === "USD/BRL" || s === "USDBRL" || s === "DÓLAR" || s === "DOLAR") return "USDBRL";
+  if (s === "USD/BRL" || s === "USDBRL" || s === "DOLAR") return "USDBRL";
   if (s === "EUR/BRL" || s === "EURBRL" || s === "EURO") return "EURBRL";
+
+  if (s === "DIJAN/2029" || s === "DIJAN2029" || s === "DI1F2029") return "DI_2029";
+  if (s === "DIJAN/2032" || s === "DIJAN2032" || s === "DI1F2032") return "DI_2032";
+  if (s === "DIJAN/2037" || s === "DIJAN2037" || s === "DI1F2037") return "DI_2037";
+
+  if (s === "DAPMAI/2029" || s === "DAPMAI2029" || s === "DAPK2029") return "DAP_2029";
+  if (s === "DAPAGO/2032" || s === "DAPAGO2032" || s === "DAPQ2032") return "DAP_2032";
+  if (s === "DAPMAI/2037" || s === "DAPMAI2037" || s === "DAPK2037") return "DAP_2037";
+
+  if (s === "DICONTINUO" || s === "DI11!") return "DI_CONT";
+  if (s === "DAPCONTINUO" || s === "DAP1!") return "DAP_CONT";
+
   return "";
 }
 
