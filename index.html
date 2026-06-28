@@ -1922,7 +1922,8 @@ const FOMC_MEETINGS = [
   { label:"27–28/01/2026", end:"2026-01-28", sep:false },
   { label:"17–18/03/2026", end:"2026-03-18", sep:true  },
   { label:"28–29/04/2026", end:"2026-04-29", sep:false },
-  { label:"16–17/06/2026", end:"2026-06-17", sep:true  },
+  { label:"16–17/06/2026", end:"2026-06-17", sep:true,
+    statement:"decisão: Fed Funds mantido em 3,50%–3,75% · votação 12–0" },
   { label:"28–29/07/2026", end:"2026-07-29", sep:false },
   { label:"15–16/09/2026", end:"2026-09-16", sep:true  },
   { label:"27–28/10/2026", end:"2026-10-28", sep:false },
@@ -1943,8 +1944,12 @@ function fomcTodayISO(){
 }
 function fomcSub(m){ return m && m.sep ? "FOMC · SEP/dot plot" : "FOMC"; }
 function fomcExtra(m){
-  const sep = m && m.sep ? "SEP / dot plot · " : "";
-  return sep + "comunicado 14h ET · coletiva 14h30 ET";
+  const parts=[];
+  if(m && m.statement) parts.push(m.statement);
+  if(m && m.sep) parts.push("SEP / dot plot");
+  // Horários oficiais do comunicado/coletiva no segundo dia da reunião.
+  parts.push("comunicado 14h ET · coletiva 14h30 ET");
+  return parts.join(" · ");
 }
 function warFomcSection(){
   const today = fomcTodayISO();
