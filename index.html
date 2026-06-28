@@ -1915,6 +1915,52 @@ let warLoading=false;
 let warLastData=null;   // guarda o último JSON do Worker (para trocar de aba sem refetch)
 let warTab="br";        // aba ativa: "br" | "us"
 
+
+// ── FOMC: calendário oficial 2026/2027 (datas publicadas pelo Federal Reserve) ──
+// Asterisco/sep = reunião com Summary of Economic Projections (SEP / dot plot).
+const FOMC_MEETINGS = [
+  { label:"27–28/01/2026", end:"2026-01-28", sep:false },
+  { label:"17–18/03/2026", end:"2026-03-18", sep:true  },
+  { label:"28–29/04/2026", end:"2026-04-29", sep:false },
+  { label:"16–17/06/2026", end:"2026-06-17", sep:true  },
+  { label:"28–29/07/2026", end:"2026-07-29", sep:false },
+  { label:"15–16/09/2026", end:"2026-09-16", sep:true  },
+  { label:"27–28/10/2026", end:"2026-10-28", sep:false },
+  { label:"08–09/12/2026", end:"2026-12-09", sep:true  },
+  { label:"26–27/01/2027", end:"2027-01-27", sep:false },
+  { label:"16–17/03/2027", end:"2027-03-17", sep:true  },
+  { label:"27–28/04/2027", end:"2027-04-28", sep:false },
+  { label:"08–09/06/2027", end:"2027-06-09", sep:true  },
+  { label:"27–28/07/2027", end:"2027-07-28", sep:false },
+  { label:"14–15/09/2027", end:"2027-09-15", sep:true  },
+  { label:"26–27/10/2027", end:"2027-10-27", sep:false },
+  { label:"07–08/12/2027", end:"2027-12-08", sep:true  },
+];
+
+function fomcTodayISO(){
+  try{ return marketDateKey(getNow(), "America/New_York"); }
+  catch(e){ return new Date().toISOString().slice(0,10); }
+}
+function fomcSub(m){ return m && m.sep ? "FOMC · SEP/dot plot" : "FOMC"; }
+function fomcExtra(m){
+  const sep = m && m.sep ? "SEP / dot plot · " : "";
+  return sep + "comunicado 14h ET · coletiva 14h30 ET";
+}
+function warFomcSection(){
+  const today = fomcTodayISO();
+  const past = FOMC_MEETINGS.filter(m => m.end < today);
+  const future = FOMC_MEETINGS.filter(m => m.end >= today);
+  const last = past.length ? past[past.length - 1] : null;
+  const next = future[0] || null;
+  const later = future[1] || null;
+  const items = [];
+  if(last){ items.push({ name:"Última reunião", sub:fomcSub(last), val:last.label, when:"past", extra:fomcExtra(last) }); }
+  if(next){ items.push({ name:"Próxima reunião", sub:fomcSub(next), val:next.label, when:"next" }); }
+  if(later){ items.push({ name:"Reunião seguinte", sub:fomcSub(later), val:later.label, when:"later" }); }
+  if(!items.length){ items.push({ name:"Próxima reunião", sub:"FOMC", val:"a definir", when:"next" }); }
+  return { title:"FOMC", layout:"list", items };
+}
+
 // ── MOCK temporário da aba EUA (Etapa 1: validação visual; sem backend ainda) ──
 function warUsMockSections(){
   return [
@@ -1954,11 +2000,7 @@ function warUsMockSections(){
         { label:"3,75–4,00", values:["31,0%","31,0%","42,1%"] },
       ],
       foot:"probabilidades implícitas · próxima reunião FOMC (mock)" },
-    { title:"FOMC", layout:"list", items:[
-      { name:"Última reunião", sub:"FOMC", val:"06–07/05/2026", when:"past", extra:"decisão: manteve 4,25–4,50% · ata: —" },
-      { name:"Próxima reunião", sub:"FOMC", val:"17–18/06/2026", when:"next" },
-      { name:"Reunião seguinte", sub:"FOMC", val:"28–29/07/2026", when:"later" },
-    ]},
+    warFomcSection(),
   ];
 }
 
