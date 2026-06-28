@@ -438,6 +438,13 @@
   .fred-plot { width: 100%; padding: 8px 4px 0; box-sizing: border-box; }
   .fred-head-val { font-size: 22px; font-weight: 800; color: var(--txt); padding: 4px 12px 2px; }
   .fred-head-ref { font-size: 11px; color: var(--txt-dim); padding: 0 12px 10px; }
+  .fred-periods { display: flex; gap: 5px; padding: 0 8px 10px; }
+  .fred-period-btn { flex: 1; min-width: 0; padding: 6px 4px; border-radius: 8px;
+    border: 1px solid var(--card-line); background: var(--card); color: var(--txt-dim);
+    font-size: 10.5px; font-weight: 800; font-family: inherit; cursor: pointer;
+    white-space: nowrap; }
+  .fred-period-btn.active { background: var(--accent); border-color: var(--accent); color: #04130d; }
+  .fred-period-btn:active { transform: scale(0.97); }
   .fred-state { padding: 30px 16px; color: var(--txt-dim); font-size: 13px; text-align: center; }
   .fred-foot { font-size: 10px; color: var(--txt-dim); opacity: .8; padding: 8px 12px 14px; }
   .fred-line { fill: none; stroke: var(--accent); stroke-width: 2; }
@@ -1551,32 +1558,70 @@ function closeTradingViewChart(){
 
 // ── Gráfico FRED (interno, SVG, sem TradingView) ──
 const FRED_CHART_ENDPOINT="https://tgp-market-quotes.jpauloct.workers.dev?fredChart=";
+const FRED_PERIODS=[
+  {key:"ytd", label:"No ano"},
+  {key:"6m", label:"6M"},
+  {key:"1y", label:"1A"},
+  {key:"3y", label:"3A"},
+  {key:"5y", label:"5A"},
+];
+let fredChartActiveSeries=null;
+let fredChartActivePeriod="1y";
+
+function fredNormalizePeriod(period){
+  return FRED_PERIODS.some(p=>p.key===period) ? period : "1y";
+}
+
+function fredPeriodButtonsHTML(series, activePeriod){
+  const safeSeries=String(series||"DGS10").replace(/[^A-Za-z0-9_\-]/g,"");
+  const active=fredNormalizePeriod(activePeriod);
+  return '<div class="fred-periods">'+FRED_PERIODS.map(p=>
+    '<button class="fred-period-btn'+(p.key===active?' active':'')+'" type="button" data-fred-series="'+safeSeries+'" data-fred-period="'+p.key+'">'+p.label+'</button>'
+  ).join("")+'</div>';
+}
+
+function fredAttachPeriodButtons(){
+  document.querySelectorAll("#fred-chart-container .fred-period-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      openFredChart(btn.dataset.fredSeries || fredChartActiveSeries || "DGS10", btn.dataset.fredPeriod || "1y");
+    });
+  });
+}
 
 function closeFredChart(){
   const screen=document.getElementById("fred-chart-screen");
   const container=document.getElementById("fred-chart-container");
   if(screen) screen.classList.remove("show");
   if(container) container.innerHTML="";
+  fredChartState=null;
 }
 
-async function openFredChart(series){
+async function openFredChart(series, period){
   const screen=document.getElementById("fred-chart-screen");
   const container=document.getElementById("fred-chart-container");
   const title=document.getElementById("fred-chart-title");
   const subtitle=document.getElementById("fred-chart-subtitle");
   if(!screen||!container) return;
+  const activePeriod=fredNormalizePeriod(period || fredChartActivePeriod || "1y");
+  fredChartActiveSeries=series;
+  fredChartActivePeriod=activePeriod;
+  fredChartState=null;
   screen.classList.add("show");
-  container.innerHTML='<div class="fred-state">Carregando…</div>';
+  container.innerHTML='<div class="fred-plot">'+fredPeriodButtonsHTML(series, activePeriod)+'<div class="fred-state">Carregando…</div></div>';
+  fredAttachPeriodButtons();
   try{
-    const res=await fetch(FRED_CHART_ENDPOINT+encodeURIComponent(series), { cache:"no-store" });
+    const res=await fetch(FRED_CHART_ENDPOINT+encodeURIComponent(series)+"&period="+encodeURIComponent(activePeriod), { cache:"no-store" });
     const data=await res.json();
     if(!data || !data.ok || !Array.isArray(data.points) || !data.points.length) throw new Error("sem dados");
+    fredChartActivePeriod=fredNormalizePeriod(data.period || activePeriod);
     if(title) title.textContent=data.title||"GRÁFICO";
     if(subtitle) subtitle.textContent=data.subtitle||"FRED";
     container.innerHTML=fredChartHTML(data);
+    fredAttachPeriodButtons();
     fredAttachCrosshair();
   }catch(e){
-    container.innerHTML='<div class="fred-state">Não foi possível carregar o gráfico agora.</div>';
+    container.innerHTML='<div class="fred-plot">'+fredPeriodButtonsHTML(series, activePeriod)+'<div class="fred-state">Não foi possível carregar o gráfico agora.</div></div>';
+    fredAttachPeriodButtons();
   }
 }
 
@@ -1625,6 +1670,7 @@ function fredChartHTML(data){
     '<div class="fred-plot">'+
       '<div class="fred-head-val">Último: '+fmt(last.value)+'</div>'+
       '<div class="fred-head-ref">'+refDate+'</div>'+
+      fredPeriodButtonsHTML(data.seriesId || fredChartActiveSeries || "DGS10", data.period || fredChartActivePeriod || "1y")+
       '<div class="fred-svg-wrap" style="position:relative">'+
         '<svg id="fred-svg" viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet" style="touch-action:none">'+
           '<line class="fred-axis" x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'"/>'+
@@ -1698,9 +1744,9 @@ function warRenderCard(it){
     card.setAttribute("role","button");
     card.setAttribute("tabindex","0");
     card.setAttribute("title","Abrir gráfico (FRED)");
-    card.setAttribute("onclick","openFredChart('DGS10')");
+    card.setAttribute("onclick","openFredChart('DGS10','1y')");
     card.addEventListener("keydown",e=>{
-      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openFredChart('DGS10'); }
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openFredChart('DGS10','1y'); }
     });
   }
   const chartKey=tgpWarChartKey(it.label);
