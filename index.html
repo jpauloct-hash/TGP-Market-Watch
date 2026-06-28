@@ -444,6 +444,12 @@
   .fred-area { fill: var(--accent); opacity: 0.08; }
   .fred-axis { stroke: var(--card-line); stroke-width: 1; }
   .fred-axis-lbl { fill: var(--txt-dim); font-size: 9px; }
+  /* crosshair interativo */
+  .fred-cross { stroke: var(--txt-dim); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.7; }
+  .fred-cross-dot { fill: var(--accent); stroke: var(--bg); stroke-width: 1.5; }
+  .fred-tooltip { position: absolute; top: 2px; padding: 3px 8px; font-size: 11px; font-weight: 700;
+    color: var(--txt); background: var(--card); border: 1px solid var(--card-line);
+    border-radius: 7px; white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; }
   .tv-chart-screen.show { transform: translateY(0); }
   .tv-chart-head {
     flex: 0 0 auto;
@@ -1568,12 +1574,15 @@ async function openFredChart(series){
     if(title) title.textContent=data.title||"GRÁFICO";
     if(subtitle) subtitle.textContent=data.subtitle||"FRED";
     container.innerHTML=fredChartHTML(data);
+    fredAttachCrosshair();
   }catch(e){
     container.innerHTML='<div class="fred-state">Não foi possível carregar o gráfico agora.</div>';
   }
 }
 
 // monta o HTML do gráfico (cabeçalho + SVG de linha) a partir do payload do Worker
+let fredChartState=null; // geometria do gráfico atual (para o crosshair)
+
 function fredChartHTML(data){
   const pts=data.points;
   const last=pts[pts.length-1];
@@ -1583,7 +1592,6 @@ function fredChartHTML(data){
 
   // dimensões do gráfico
   const W=320, H=180, padL=8, padR=8, padT=10, padB=22;
-  const xs=pts.map((_,i)=>i);
   const ys=pts.map(p=>p.value);
   const minY=Math.min(...ys), maxY=Math.max(...ys);
   const rangeY=(maxY-minY)||1;
@@ -1591,34 +1599,93 @@ function fredChartHTML(data){
   const X=i=> padL + (i/(pts.length-1||1))*plotW;
   const Y=v=> padT + (1-(v-minY)/rangeY)*plotH;
 
+  // guarda a geometria para o crosshair localizar pontos depois
+  fredChartState={ pts, unit, W, H, padL, padR, padT, padB, plotW, plotH,
+    X, Y, minY, maxY, fmt };
+
   let d="";
   pts.forEach((p,i)=>{ d += (i===0?"M":"L")+X(i).toFixed(1)+" "+Y(p.value).toFixed(1)+" "; });
-  // área sob a linha
   const areaD = d + "L"+X(pts.length-1).toFixed(1)+" "+(padT+plotH)+" L"+X(0).toFixed(1)+" "+(padT+plotH)+" Z";
 
-  // poucas datas no eixo X (primeira, meio, última)
   const idxs=[0, Math.floor(pts.length/2), pts.length-1];
   const xLabels=idxs.map(i=>{
     const mm=pts[i].date.slice(5,7), yy=pts[i].date.slice(2,4);
     return '<text class="fred-axis-lbl" x="'+X(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="'+(i===0?"start":i===pts.length-1?"end":"middle")+'">'+mm+"/"+yy+'</text>';
   }).join("");
-  // min/max no eixo Y
   const yLabels=
     '<text class="fred-axis-lbl" x="'+(W-padR)+'" y="'+(Y(maxY)-2).toFixed(1)+'" text-anchor="end">'+fmt(maxY)+'</text>'+
     '<text class="fred-axis-lbl" x="'+(W-padR)+'" y="'+(Y(minY)).toFixed(1)+'" text-anchor="end">'+fmt(minY)+'</text>';
+
+  // elementos do crosshair (ocultos até o toque)
+  const crosshair=
+    '<line id="fred-cross-x" class="fred-cross" x1="0" y1="'+padT+'" x2="0" y2="'+(padT+plotH)+'" style="display:none"/>'+
+    '<circle id="fred-cross-dot" class="fred-cross-dot" cx="0" cy="0" r="3.5" style="display:none"/>';
 
   return ''+
     '<div class="fred-plot">'+
       '<div class="fred-head-val">Último: '+fmt(last.value)+'</div>'+
       '<div class="fred-head-ref">'+refDate+'</div>'+
-      '<svg viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet">'+
-        '<line class="fred-axis" x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'"/>'+
-        '<path class="fred-area" d="'+areaD+'"/>'+
-        '<path class="fred-line" d="'+d.trim()+'"/>'+
-        xLabels+yLabels+
-      '</svg>'+
+      '<div class="fred-svg-wrap" style="position:relative">'+
+        '<svg id="fred-svg" viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet" style="touch-action:none">'+
+          '<line class="fred-axis" x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'"/>'+
+          '<path class="fred-area" d="'+areaD+'"/>'+
+          '<path class="fred-line" d="'+d.trim()+'"/>'+
+          xLabels+yLabels+crosshair+
+        '</svg>'+
+        '<div id="fred-tooltip" class="fred-tooltip" style="display:none"></div>'+
+      '</div>'+
       '<div class="fred-foot">Fonte: FRED · '+(data.seriesId||"")+'</div>'+
     '</div>';
+}
+
+// liga o crosshair (Pointer Events) ao SVG recém-inserido
+function fredAttachCrosshair(){
+  const svg=document.getElementById("fred-svg");
+  const xLine=document.getElementById("fred-cross-x");
+  const dot=document.getElementById("fred-cross-dot");
+  const tip=document.getElementById("fred-tooltip");
+  if(!svg||!xLine||!dot||!tip||!fredChartState) return;
+  const st=fredChartState;
+
+  function hide(){
+    xLine.style.display="none"; dot.style.display="none"; tip.style.display="none";
+  }
+  // converte X de pixel da tela → coordenada do viewBox SVG
+  function clientXToSvg(clientX){
+    const rect=svg.getBoundingClientRect();
+    const rel=(clientX-rect.left)/rect.width;       // 0..1
+    return rel*st.W;                                  // coordenada no viewBox
+  }
+  function update(clientX){
+    const svgX=clientXToSvg(clientX);
+    // índice do ponto mais próximo (inverte a função X)
+    let i=Math.round(((svgX-st.padL)/st.plotW)*(st.pts.length-1));
+    i=Math.max(0, Math.min(st.pts.length-1, i));
+    const p=st.pts[i];
+    const px=st.X(i), py=st.Y(p.value);
+    // linha vertical + bolinha
+    xLine.setAttribute("x1",px); xLine.setAttribute("x2",px);
+    xLine.style.display="";
+    dot.setAttribute("cx",px); dot.setAttribute("cy",py);
+    dot.style.display="";
+    // tooltip (data · valor), reposicionado para não sair da tela
+    const dataBR=p.date.split("-").reverse().join("/");
+    tip.textContent=dataBR+" · "+st.fmt(p.value);
+    tip.style.display="";
+    const wrapW=svg.getBoundingClientRect().width;
+    const pxScreen=(px/st.W)*wrapW;                  // posição em px na tela
+    const tipW=tip.offsetWidth||120;
+    let left=pxScreen-tipW/2;
+    if(left<2) left=2;
+    if(left+tipW>wrapW-2) left=wrapW-tipW-2;
+    tip.style.left=left+"px";
+  }
+
+  svg.addEventListener("pointerdown", e=>{ svg.setPointerCapture(e.pointerId); update(e.clientX); });
+  svg.addEventListener("pointermove", e=>{ if(e.pressure>0 || e.buttons>0 || e.pointerType==="touch"){ update(e.clientX); } });
+  svg.addEventListener("pointerup", hide);
+  svg.addEventListener("pointerleave", hide);
+  svg.addEventListener("pointercancel", hide);
 }
 
 
