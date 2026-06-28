@@ -115,7 +115,7 @@
   :root.matrix #rain { opacity: 1; }
   :root.matrix { background: #000 !important; }
   :root.matrix body { background: transparent !important; }
-  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#war-screen):not(#tv-chart-screen) { position: relative; z-index: 1; }
+  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#war-screen):not(#tv-chart-screen):not(#fred-chart-screen) { position: relative; z-index: 1; }
   .brand {
     width: min(92vw, 440px); display: flex; align-items: baseline; gap: 8px;
     padding: 0 4px 2px; user-select: none;
@@ -433,6 +433,17 @@
   }
   /* reforço por ID: impede que a regra global body > * sobrescreva position/z-index */
   #tv-chart-screen { position: fixed; inset: 0; z-index: 120; }
+  #fred-chart-screen { position: fixed; inset: 0; z-index: 121; }
+  /* gráfico FRED em SVG */
+  .fred-plot { width: 100%; padding: 8px 4px 0; box-sizing: border-box; }
+  .fred-head-val { font-size: 22px; font-weight: 800; color: var(--txt); padding: 4px 12px 2px; }
+  .fred-head-ref { font-size: 11px; color: var(--txt-dim); padding: 0 12px 10px; }
+  .fred-state { padding: 30px 16px; color: var(--txt-dim); font-size: 13px; text-align: center; }
+  .fred-foot { font-size: 10px; color: var(--txt-dim); opacity: .8; padding: 8px 12px 14px; }
+  .fred-line { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .fred-area { fill: var(--accent); opacity: 0.08; }
+  .fred-axis { stroke: var(--card-line); stroke-width: 1; }
+  .fred-axis-lbl { fill: var(--txt-dim); font-size: 9px; }
   .tv-chart-screen.show { transform: translateY(0); }
   .tv-chart-head {
     flex: 0 0 auto;
@@ -577,6 +588,17 @@
       <button id="tv-chart-close" class="tv-chart-close" type="button">&#10005;</button>
     </div>
     <div id="tv-chart-container" class="tv-chart-container"></div>
+  </div>
+
+  <div id="fred-chart-screen" class="tv-chart-screen">
+    <div class="tv-chart-head">
+      <div>
+        <div id="fred-chart-title" class="tv-chart-title">GRÁFICO</div>
+        <div id="fred-chart-subtitle" class="tv-chart-subtitle">FRED</div>
+      </div>
+      <button id="fred-chart-close" class="tv-chart-close" type="button">&#10005;</button>
+    </div>
+    <div id="fred-chart-container" class="tv-chart-container"></div>
   </div>
 <script>
 const SVGNS="http://www.w3.org/2000/svg";
@@ -1521,10 +1543,99 @@ function closeTradingViewChart(){
   if (container) container.innerHTML = "";
 }
 
+// ── Gráfico FRED (interno, SVG, sem TradingView) ──
+const FRED_CHART_ENDPOINT="https://tgp-market-quotes.jpauloct.workers.dev?fredChart=";
+
+function closeFredChart(){
+  const screen=document.getElementById("fred-chart-screen");
+  const container=document.getElementById("fred-chart-container");
+  if(screen) screen.classList.remove("show");
+  if(container) container.innerHTML="";
+}
+
+async function openFredChart(series){
+  const screen=document.getElementById("fred-chart-screen");
+  const container=document.getElementById("fred-chart-container");
+  const title=document.getElementById("fred-chart-title");
+  const subtitle=document.getElementById("fred-chart-subtitle");
+  if(!screen||!container) return;
+  screen.classList.add("show");
+  container.innerHTML='<div class="fred-state">Carregando…</div>';
+  try{
+    const res=await fetch(FRED_CHART_ENDPOINT+encodeURIComponent(series), { cache:"no-store" });
+    const data=await res.json();
+    if(!data || !data.ok || !Array.isArray(data.points) || !data.points.length) throw new Error("sem dados");
+    if(title) title.textContent=data.title||"GRÁFICO";
+    if(subtitle) subtitle.textContent=data.subtitle||"FRED";
+    container.innerHTML=fredChartHTML(data);
+  }catch(e){
+    container.innerHTML='<div class="fred-state">Não foi possível carregar o gráfico agora.</div>';
+  }
+}
+
+// monta o HTML do gráfico (cabeçalho + SVG de linha) a partir do payload do Worker
+function fredChartHTML(data){
+  const pts=data.points;
+  const last=pts[pts.length-1];
+  const unit=data.unit||"";
+  const fmt=v=> (Math.round(v*100)/100).toString().replace(".",",")+unit;
+  const refDate=last.date ? ("ref. "+last.date.split("-").reverse().join("/")) : "";
+
+  // dimensões do gráfico
+  const W=320, H=180, padL=8, padR=8, padT=10, padB=22;
+  const xs=pts.map((_,i)=>i);
+  const ys=pts.map(p=>p.value);
+  const minY=Math.min(...ys), maxY=Math.max(...ys);
+  const rangeY=(maxY-minY)||1;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const X=i=> padL + (i/(pts.length-1||1))*plotW;
+  const Y=v=> padT + (1-(v-minY)/rangeY)*plotH;
+
+  let d="";
+  pts.forEach((p,i)=>{ d += (i===0?"M":"L")+X(i).toFixed(1)+" "+Y(p.value).toFixed(1)+" "; });
+  // área sob a linha
+  const areaD = d + "L"+X(pts.length-1).toFixed(1)+" "+(padT+plotH)+" L"+X(0).toFixed(1)+" "+(padT+plotH)+" Z";
+
+  // poucas datas no eixo X (primeira, meio, última)
+  const idxs=[0, Math.floor(pts.length/2), pts.length-1];
+  const xLabels=idxs.map(i=>{
+    const mm=pts[i].date.slice(5,7), yy=pts[i].date.slice(2,4);
+    return '<text class="fred-axis-lbl" x="'+X(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="'+(i===0?"start":i===pts.length-1?"end":"middle")+'">'+mm+"/"+yy+'</text>';
+  }).join("");
+  // min/max no eixo Y
+  const yLabels=
+    '<text class="fred-axis-lbl" x="'+(W-padR)+'" y="'+(Y(maxY)-2).toFixed(1)+'" text-anchor="end">'+fmt(maxY)+'</text>'+
+    '<text class="fred-axis-lbl" x="'+(W-padR)+'" y="'+(Y(minY)).toFixed(1)+'" text-anchor="end">'+fmt(minY)+'</text>';
+
+  return ''+
+    '<div class="fred-plot">'+
+      '<div class="fred-head-val">Último: '+fmt(last.value)+'</div>'+
+      '<div class="fred-head-ref">'+refDate+'</div>'+
+      '<svg viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet">'+
+        '<line class="fred-axis" x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'"/>'+
+        '<path class="fred-area" d="'+areaD+'"/>'+
+        '<path class="fred-line" d="'+d.trim()+'"/>'+
+        xLabels+yLabels+
+      '</svg>'+
+      '<div class="fred-foot">Fonte: FRED · '+(data.seriesId||"")+'</div>'+
+    '</div>';
+}
+
 
 function warRenderCard(it){
   const card=document.createElement("div");
   card.className="war-card "+warToneClass(it.tone);
+  // TESTE: só o card US10Y abre o gráfico interno do FRED (não TradingView)
+  if(String(it.label).trim()==="US10Y"){
+    card.classList.add("tv-clickable");
+    card.setAttribute("role","button");
+    card.setAttribute("tabindex","0");
+    card.setAttribute("title","Abrir gráfico (FRED)");
+    card.setAttribute("onclick","openFredChart('DGS10')");
+    card.addEventListener("keydown",e=>{
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openFredChart('DGS10'); }
+    });
+  }
   const chartKey=tgpWarChartKey(it.label);
   if(chartKey){
     card.classList.add("tv-clickable");
@@ -1825,6 +1936,7 @@ document.querySelectorAll(".war-tab").forEach(b=>{
   b.addEventListener("click", ()=> warSetTab(b.dataset.tab));
 });
 document.getElementById("tv-chart-close").addEventListener("click", closeTradingViewChart);
+document.getElementById("fred-chart-close").addEventListener("click", closeFredChart);
 </script>
 </body>
 </html>
