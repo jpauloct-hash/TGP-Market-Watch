@@ -296,6 +296,17 @@
   .war-ref { color: var(--txt-dim); font-weight: 500; }
   /* card largo (copom, tesouro) ocupa a linha toda */
   .war-card.wide { grid-column: 1 / -1; }
+  /* seletor de abas Brasil/EUA */
+  .war-tabs { display: flex; gap: 6px; margin: 0 0 14px; }
+  .war-tab { flex: 1; padding: 8px 0; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    background: var(--card); color: var(--txt-dim); border: 1px solid var(--card-line);
+    border-radius: 9px; cursor: pointer; transition: all .15s; }
+  .war-tab.active { background: var(--accent); color: #06251a; border-color: var(--accent); }
+  /* sub-bloco "Índices" dentro de Mercados Hoje (EUA): subtítulo + 1 linha de 3 cards */
+  .war-subtitle { font-size: 9px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--txt-dim); margin: 0 0 6px 1px; }
+  .war-idx-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+  .war-idx-row .war-card { padding: 8px 9px; gap: 2px; border-left-width: 3px; }
   /* layout de COLUNAS temáticas: SEMPRE 3 lado a lado, como uma tabela (igual à planilha) */
   .war-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .war-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
@@ -324,6 +335,8 @@
   .war-table { padding: 12px 14px; }
   .war-trow { display: grid; grid-template-columns: minmax(58px, 1.2fr) repeat(2, minmax(54px, 1fr));
     gap: 6px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--card-line); }
+  /* variante com 3 colunas de dados (ex.: CME FedWatch: rótulo + atual/ontem/semana) */
+  .war-table.cols3 .war-trow { grid-template-columns: minmax(64px, 1.1fr) repeat(3, minmax(42px, 1fr)); }
   .war-trow:last-of-type { border-bottom: none; }
   .war-thead { border-bottom: 1px solid var(--card-line); padding-bottom: 8px; }
   .war-tlabel { font-size: 12px; font-weight: 600; color: var(--txt); min-width: 0; }
@@ -549,6 +562,10 @@
       </div>
     </div>
     <div class="war-updated" id="war-updated">—</div>
+    <div class="war-tabs" id="war-tabs">
+      <button class="war-tab active" data-tab="br" type="button">Brasil</button>
+      <button class="war-tab" data-tab="us" type="button">EUA</button>
+    </div>
     <div class="war-body" id="war-body"></div>
   </div>
   <div id="tv-chart-screen" class="tv-chart-screen">
@@ -1565,7 +1582,8 @@ function warRenderListCard(items){
 // tabela com cara de card: cabeçalho de anos + linhas (indicador × valores por ano)
 function warRenderTable(section){
   const card=document.createElement("div");
-  card.className="war-card official wide war-table";
+  const nCols=(section.columns||[]).length;
+  card.className="war-card official wide war-table"+(nCols>=3?" cols3":"");
   const head=document.createElement("div"); head.className="war-trow war-thead";
   const corner=document.createElement("div"); corner.className="war-tlabel"; corner.textContent="";
   head.appendChild(corner);
@@ -1591,10 +1609,39 @@ function warRenderTable(section){
   return card;
 }
 
+// layout "us-markets": sub-bloco "Índices" (1 linha, 3 cards) + 3 colunas temáticas
+function warRenderUsMarkets(section){
+  const frag=document.createDocumentFragment();
+  // sub-bloco Índices
+  if(section.indices){
+    const sub=document.createElement("div"); sub.className="war-subtitle";
+    sub.textContent=section.indices.title||"Índices";
+    frag.appendChild(sub);
+    const row=document.createElement("div"); row.className="war-idx-row";
+    (section.indices.items||[]).forEach(it=> row.appendChild(warRenderCard(it)));
+    frag.appendChild(row);
+  }
+  // 3 colunas temáticas (Moedas / Treasuries / TIPS)
+  if(Array.isArray(section.columns)){
+    const cols=document.createElement("div"); cols.className="war-cols";
+    section.columns.forEach(col=>{
+      const c=document.createElement("div"); c.className="war-col";
+      if(col.head){ const h=document.createElement("div"); h.className="war-col-head"; h.textContent=col.head; c.appendChild(h); }
+      (col.items||[]).forEach(it=> c.appendChild(warRenderCard(it)));
+      cols.appendChild(c);
+    });
+    frag.appendChild(cols);
+  }
+  return frag;
+}
+
 function warRender(data){
+  // aceita: warRender(data) → usa data.sections (Brasil, compat)
+  //         warRender(sectionsArray) → renderiza a lista passada (usado nas abas)
+  const sections = Array.isArray(data) ? data : (data && data.sections) || [];
   const body=document.getElementById("war-body");
   body.innerHTML="";
-  data.sections.forEach(section=>{
+  sections.forEach(section=>{
     const sec=document.createElement("div"); sec.className="war-section";
     const title=document.createElement("div"); title.className="war-section-title";
     title.textContent=section.title;
@@ -1603,6 +1650,8 @@ function warRender(data){
       sec.appendChild(warRenderListCard(section.items));
     } else if(section.layout==="table"){
       sec.appendChild(warRenderTable(section));
+    } else if(section.layout==="us-markets"){
+      sec.appendChild(warRenderUsMarkets(section));
     } else if(section.layout==="columns"){
       const cols=document.createElement("div"); cols.className="war-cols";
       section.columns.forEach(col=>{
@@ -1623,12 +1672,14 @@ function warRender(data){
     }
     body.appendChild(sec);
   });
-  // horário da última atualização (updatedAt vem como ISO string do Worker)
-  const upd=document.getElementById("war-updated");
-  const d = data.updatedAt ? new Date(data.updatedAt) : new Date();
-  const hh=String(d.getHours()).padStart(2,"0");
-  const mm=String(d.getMinutes()).padStart(2,"0");
-  upd.textContent="Atualizado às "+hh+":"+mm;
+  // horário da última atualização (só quando recebe o objeto data completo)
+  if(!Array.isArray(data)){
+    const upd=document.getElementById("war-updated");
+    const d = data.updatedAt ? new Date(data.updatedAt) : new Date();
+    const hh=String(d.getHours()).padStart(2,"0");
+    const mm=String(d.getMinutes()).padStart(2,"0");
+    upd.textContent="Atualizado às "+hh+":"+mm;
+  }
 }
 
 const warScreen=document.getElementById("war-screen");
@@ -1637,6 +1688,91 @@ const WAR_ENDPOINT="https://tgp-market-quotes.jpauloct.workers.dev?panel=war";
 // Em produção a Tela de Guerra usa SEMPRE dados reais do Worker; sem fallback silencioso.
 const WAR_DEBUG_MOCK=false;
 let warLoading=false;
+let warLastData=null;   // guarda o último JSON do Worker (para trocar de aba sem refetch)
+let warTab="br";        // aba ativa: "br" | "us"
+
+// ── MOCK temporário da aba EUA (Etapa 1: validação visual; sem backend ainda) ──
+function warUsMockSections(){
+  return [
+    { title:"Panorama Econômico", layout:"cards", cols:3, items:[
+      { label:"Fed Funds", value:"4,50%", tone:"official", sub:"teto meta" },
+      { label:"Core PCE", value:"2,80%", tone:"official", ref:"ref. mai/2026" },
+      { label:"PCE mensal", value:"0,30%", tone:"official", ref:"ref. mai/2026" },
+    ]},
+    { title:"Mercados hoje", layout:"us-markets",
+      indices:{ title:"Índices", items:[
+        { label:"S&P500", value:"5.842", tone:"up", changePct:0.62 },
+        { label:"DJIA",   value:"42.150", tone:"up", changePct:0.41 },
+        { label:"NASDAQ", value:"19.380", tone:"down", changePct:-0.18 },
+      ]},
+      columns:[
+        { head:"Moedas", items:[
+          { label:"DXY",     value:"104,2", tone:"flat", changePct:0.05 },
+          { label:"EUR/USD", value:"1,082", tone:"down", changePct:-0.12 },
+          { label:"USD/JPY", value:"157,4", tone:"up", changePct:0.22 },
+        ]},
+        { head:"Treasuries", items:[
+          { label:"US2Y",  value:"4,28%", tone:"official" },
+          { label:"US5Y",  value:"4,15%", tone:"official" },
+          { label:"US10Y", value:"4,32%", tone:"official" },
+        ]},
+        { head:"TIPS", items:[
+          { label:"TIPS 2Y",  value:"+1,75%", tone:"official" },
+          { label:"TIPS 5Y",  value:"+1,82%", tone:"official" },
+          { label:"TIPS 10Y", value:"+1,95%", tone:"official" },
+        ]},
+      ],
+    },
+    { title:"CME FedWatch", layout:"table",
+      columns:["atual","dia ant.","sem. ant."],
+      rows:[
+        { label:"3,50–3,75", values:["69,0%","69,0%","57,9%"] },
+        { label:"3,75–4,00", values:["31,0%","31,0%","42,1%"] },
+      ],
+      foot:"probabilidades implícitas · próxima reunião FOMC (mock)" },
+    { title:"FOMC", layout:"list", items:[
+      { name:"Última reunião", sub:"FOMC", val:"06–07/05/2026", when:"past", extra:"decisão: manteve 4,25–4,50% · ata: —" },
+      { name:"Próxima reunião", sub:"FOMC", val:"17–18/06/2026", when:"next" },
+      { name:"Reunião seguinte", sub:"FOMC", val:"28–29/07/2026", when:"later" },
+    ]},
+  ];
+}
+
+// renderiza a aba ativa a partir do que está em warLastData
+// mescla seções: usa a real do Worker quando existir (por título); senão, a do mock.
+// preserva a ORDEM do mock (Panorama → Mercados → FedWatch → FOMC).
+function warMergeUsSections(){
+  const mock = warUsMockSections();
+  const real = (warLastData && warLastData.us && Array.isArray(warLastData.us.sections))
+    ? warLastData.us.sections : [];
+  const byTitle = {};
+  real.forEach(s=>{ if(s && s.title) byTitle[s.title]=s; });
+  return mock.map(m => byTitle[m.title] || m);
+}
+
+function warRenderActiveTab(){
+  if(warTab==="us"){
+    // dados reais do Worker (Panorama/Mercados via FRED) + mock no resto (FedWatch/FOMC)
+    warRender(warMergeUsSections());
+    setWarSubtitle("Mercado EUA");
+  } else {
+    if(warLastData) warRender(warLastData);
+    setWarSubtitle("Mercado Brasil");
+  }
+}
+
+function setWarSubtitle(txt){
+  const sub=document.querySelector(".war-title-sub");
+  if(sub) sub.textContent=txt;
+}
+
+function warSetTab(tab){
+  warTab = (tab==="us") ? "us" : "br";
+  document.querySelectorAll(".war-tab").forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab===warTab);
+  });
+  warRenderActiveTab();
+}
 
 function warShowMessage(msg, isError){
   const body=document.getElementById("war-body");
@@ -1658,7 +1794,8 @@ async function warLoad(){
     if(!res.ok) throw new Error("http_"+res.status);
     const data=await res.json();
     if(!data || !Array.isArray(data.sections) || !data.sections.length) throw new Error("empty");
-    warRender(data);
+    warLastData=data;
+    warRenderActiveTab();
   }catch(e){
     console.warn("[TGP War] Falha ao carregar/renderizar Tela de Guerra:", e);
     warShowMessage("Não foi possível carregar os dados agora. Toque em ↻ para tentar de novo.", true);
@@ -1670,7 +1807,8 @@ async function warLoad(){
 
 function warOpen(){
   warScreen.classList.add("show");
-  if(WAR_DEBUG_MOCK){ warRender(warMockData()); return; }
+  warSetTab("br"); // Brasil é sempre a aba padrão ao abrir
+  if(WAR_DEBUG_MOCK){ warLastData={updatedAt:new Date().toISOString(),sections:warMockData().sections}; warRenderActiveTab(); return; }
   warLoad();
 }
 function warClose(){ warScreen.classList.remove("show"); }
@@ -1683,6 +1821,9 @@ function warRefresh(){
 document.getElementById("open-war").addEventListener("click", warOpen);
 document.getElementById("war-close").addEventListener("click", warClose);
 document.getElementById("war-refresh").addEventListener("click", warRefresh);
+document.querySelectorAll(".war-tab").forEach(b=>{
+  b.addEventListener("click", ()=> warSetTab(b.dataset.tab));
+});
 document.getElementById("tv-chart-close").addEventListener("click", closeTradingViewChart);
 </script>
 </body>
