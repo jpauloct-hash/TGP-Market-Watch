@@ -115,7 +115,7 @@
   :root.matrix #rain { opacity: 1; }
   :root.matrix { background: #000 !important; }
   :root.matrix body { background: transparent !important; }
-  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#cme-sheet):not(#cme-overlay):not(#war-screen):not(#tv-chart-screen):not(#fred-chart-screen) { position: relative; z-index: 1; }
+  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#war-screen):not(#tv-chart-screen):not(#fred-chart-screen) { position: relative; z-index: 1; }
   .brand {
     width: min(92vw, 440px); display: flex; align-items: baseline; gap: 8px;
     padding: 0 4px 2px; user-select: none;
@@ -348,6 +348,17 @@
     padding-top: 9px; }
   .war-mock-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
     background: var(--mkt-flat); color: #1a1400; padding: 2px 7px; border-radius: 4px; margin-left: 8px; }
+  /* Curva de Juros (yield curve) */
+  .yc-card { padding: 12px 12px 10px; }
+  .yc-state { padding: 22px 8px; color: var(--txt-dim); font-size: 12px; text-align: center; }
+  .yc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .yc-chip { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    background: transparent; border: 1.5px solid; cursor: pointer; transition: all .12s; }
+  .yc-chip:active { transform: scale(0.95); }
+  .yc-plot-wrap { width: 100%; }
+  .yc-grid { stroke: var(--card-line); stroke-width: 1; opacity: 0.5; }
+  .yc-axis-lbl { fill: var(--txt-dim); font-size: 9px; font-variant-numeric: tabular-nums; }
+  .yc-foot { font-size: 9.5px; color: var(--txt-dim); opacity: 0.85; font-style: italic; padding-top: 8px; }
   /* Estado da Tela de Guerra: carregando / erro */
   .war-state {
     min-height: clamp(180px, 38vh, 360px);
@@ -515,80 +526,6 @@
   }
 
 
-  /* CME FedWatch: tabela com encaminhamento para fonte oficial (sem iframe/scraping) */
-  .war-tfoot.action {
-    cursor: pointer;
-    color: var(--accent);
-    font-weight: 800;
-    opacity: 1;
-    font-style: normal;
-    letter-spacing: 0.01em;
-  }
-  .war-tfoot.action:active { transform: scale(0.99); }
-  .war-tfoot.action:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-    border-radius: 6px;
-  }
-  /* painel interno de encaminhamento para CME FedWatch */
-  #cme-overlay { position: fixed; inset: 0; z-index: 130; }
-  #cme-sheet {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 131;
-    max-width: 480px; margin: 0 auto;
-    background: var(--panel); border-radius: 20px 20px 0 0;
-    padding: 22px 20px calc(env(safe-area-inset-bottom) + 20px);
-    transform: translateY(100%);
-    transition: transform 0.32s cubic-bezier(.3,.8,.3,1);
-    border: 1px solid var(--card-line);
-  }
-  #cme-sheet.show { transform: translateY(0); }
-  .cme-card {
-    background: var(--card); border: 1px solid var(--card-line); border-left: 3px solid var(--accent);
-    border-radius: 13px; padding: 14px; margin: 12px 0;
-  }
-  .cme-card-title { font-size: 13px; font-weight: 800; color: var(--txt); margin-bottom: 7px; }
-  .cme-card-text { font-size: 12px; line-height: 1.65; color: var(--txt-dim); }
-  .cme-disclaimer { margin-top: 10px; color: var(--txt-dim); }
-  .cme-disclaimer .ico { color: var(--accent); font-weight: 900; margin-right: 4px; }
-  .cme-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-  .cme-link { display: block; text-align: center; text-decoration: none; margin-top: 0; }
-
-  /* Curva de juros EUA — gráfico interno via FRED */
-  .yield-card { gap: 8px; }
-  .yield-desc { font-size: 11px; line-height: 1.5; color: var(--txt-dim); }
-  .yield-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
-  .yield-btn {
-    flex: 1 1 44px; min-width: 44px; padding: 7px 6px; border-radius: 9px;
-    border: 1px solid var(--card-line); background: var(--card); color: var(--txt-dim);
-    font-size: 10px; font-weight: 800; letter-spacing: 0.03em; cursor: pointer;
-    font-family: inherit;
-  }
-  .yield-btn.active { background: var(--accent); border-color: var(--accent); color: #04130d; }
-  .yield-btn:active { transform: scale(0.97); }
-  .yield-chart { position: relative; min-height: 190px; }
-  .yield-svg { width: 100%; height: auto; display: block; }
-  .yield-axis { stroke: var(--card-line); stroke-width: 1; }
-  .yield-grid { stroke: var(--card-line); stroke-width: 1; opacity: 0.6; }
-  .yield-label { fill: var(--txt-dim); font-size: 9px; }
-  .yield-line { fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-  .yield-dot { stroke: var(--bg); stroke-width: 1.2; }
-  .yield-line-0, .yield-dot-0 { stroke: var(--accent); fill: var(--accent); }
-  .yield-line-1, .yield-dot-1 { stroke: var(--mkt-flat); fill: var(--mkt-flat); }
-  .yield-line-2, .yield-dot-2 { stroke: var(--txt-dim); fill: var(--txt-dim); }
-  .yield-legend { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
-  .yield-leg { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 10px; color: var(--txt-dim); }
-  .yield-leg-left { display: flex; align-items: center; gap: 6px; min-width: 0; }
-  .yield-swatch { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
-  .yield-swatch-0 { background: var(--accent); }
-  .yield-swatch-1 { background: var(--mkt-flat); }
-  .yield-swatch-2 { background: var(--txt-dim); }
-  .yield-leg-name { color: var(--txt); font-weight: 800; }
-  .yield-leg-date { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .yield-foot { font-size: 9.5px; color: var(--txt-dim); opacity: 0.85; font-style: italic; padding-top: 2px; }
-  .yield-state { padding: 28px 10px; text-align: center; color: var(--txt-dim); font-size: 12px; line-height: 1.55; }
-  .yield-msg { min-height: 14px; font-size: 9.5px; color: var(--mkt-flat); font-weight: 700; }
-
-
 </style>
 <script src="https://s3.tradingview.com/tv.js"></script>
 </head>
@@ -647,27 +584,6 @@
     <div id="news-status"></div>
     <div id="news-list"></div>
     <button class="done-btn" id="news-done-btn">Pronto</button>
-  </div>
-  <div class="overlay" id="cme-overlay"></div>
-  <div class="sheet" id="cme-sheet" aria-hidden="true">
-    <div class="grip"></div>
-    <h2>CME FedWatch</h2>
-    <div class="sub">Encaminhamento para a ferramenta oficial do CME Group.</div>
-    <div class="cme-card">
-      <div class="cme-card-title">Probabilidades da próxima reunião do FOMC</div>
-      <div class="cme-card-text">
-        Acesse a ferramenta CME FedWatch diretamente no site oficial do CME Group.
-        O CME FedWatch acompanha as probabilidades implícitas para as próximas decisões do FOMC com base nos contratos futuros de Fed Funds.
-      </div>
-      <div class="cme-card-text cme-disclaimer">
-        <span class="ico">ⓘ</span><strong>Disclaimer:</strong> o TGP Watch não calcula, armazena, reproduz nem redistribui as probabilidades do CME FedWatch. Este painel apenas direciona o usuário para a fonte oficial.
-      </div>
-    </div>
-    <div class="cme-card-text">Fonte: CME FedWatch · CME Group</div>
-    <div class="cme-actions">
-      <a class="done-btn cme-link" id="cme-official-link" href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener noreferrer">Abrir site oficial</a>
-      <button class="btn" id="cme-close" type="button">Fechar</button>
-    </div>
   </div>
   <div class="war-screen" id="war-screen">
     <div class="war-head">
@@ -1014,10 +930,16 @@ async function fetchMarketQuotes(){
 }
 
 // cor do arco quando o mercado está ABERTO.
-// O relógio comunica estado operacional: verde = aberto.
-// A variação/humor de mercado fica restrita à Tela de Guerra.
+// Nesta etapa, só saopaulo usa cotação; os demais usam a cor padrão.
 function marketArcColor(m){
-  return "var(--accent)";
+  if(m.id !== "saopaulo") return "var(--accent)";
+  const q = marketQuotes[m.id];
+  if(!q || q.changePct === null || q.changePct === undefined) return "var(--mkt-unknown)";
+  const pct = Number(q.changePct);
+  if(!Number.isFinite(pct)) return "var(--mkt-unknown)";
+  if(pct >  0.05) return "var(--mkt-up)";
+  if(pct < -0.05) return "var(--mkt-down)";
+  return "var(--mkt-flat)";
 }
 
 let hourHand,secondHand;
@@ -1208,9 +1130,9 @@ toggleBtn.addEventListener("click",()=>{
   if(t.cls==="matrix") startRain(); else stopRain();
 });
 buildSettings(); rebuild(); refreshTzLabels(); update();
-// Cotações do arco desativadas: o relógio agora usa apenas estado operacional.
-// Verde = mercado aberto; cinza = mercado fechado.
-// A Tela de Guerra continua buscando cotações pelo endpoint próprio.
+// cotações: busca ao carregar e atualiza a cada 2 minutos (nunca dentro do update)
+fetchMarketQuotes();
+setInterval(fetchMarketQuotes, 120000);
 // selo visual discreto quando o modo debug está ativo
 if(_DEBUG_ACTIVE){
   const tag=document.createElement("div");
@@ -1824,172 +1746,6 @@ function fredAttachCrosshair(){
 }
 
 
-
-// ── Curva de juros EUA (FRED): substitui CME FedWatch sem usar dados proprietários ──
-const FRED_YIELD_CURVE_ENDPOINT="https://tgp-market-quotes.jpauloct.workers.dev?fredYieldCurve=us";
-const YIELD_CURVE_OPTIONS=[
-  {key:"latest", label:"Último"},
-  {key:"1w", label:"1S"},
-  {key:"1m", label:"1M"},
-  {key:"3m", label:"3M"},
-  {key:"6m", label:"6M"},
-  {key:"1y", label:"1A"},
-];
-let yieldCurveData=null;
-let yieldCurveLoading=false;
-let yieldCurveMsg="";
-let yieldCurveSelected=["latest","1m","1y"];
-
-function yieldFmt(v){ return (Math.round(Number(v)*100)/100).toFixed(2).replace(".",",")+"%"; }
-function yieldDateBR(date){
-  if(!date) return "—";
-  const p=String(date).slice(0,10).split("-");
-  return p.length===3 ? (p[2]+"/"+p[1]+"/"+p[0]) : String(date);
-}
-function yieldSelectedSnapshots(){
-  if(!yieldCurveData || !Array.isArray(yieldCurveData.snapshots)) return [];
-  return yieldCurveSelected
-    .map(k=>yieldCurveData.snapshots.find(s=>s.key===k))
-    .filter(Boolean);
-}
-function yieldSetMsg(msg){
-  yieldCurveMsg=msg||"";
-  if(yieldCurveMsg){ setTimeout(()=>{ yieldCurveMsg=""; warRenderActiveTab(); }, 1400); }
-}
-async function yieldLoadCurve(){
-  if(yieldCurveData || yieldCurveLoading) return;
-  yieldCurveLoading=true;
-  try{
-    const res=await fetch(FRED_YIELD_CURVE_ENDPOINT, { cache:"no-store" });
-    const data=await res.json();
-    if(!data || !data.ok) throw new Error((data && data.error) || "yield_curve_unavailable");
-    yieldCurveData=data;
-  }catch(e){
-    yieldCurveData={ ok:false, error:String(e && e.message || e) };
-  }finally{
-    yieldCurveLoading=false;
-    warRenderActiveTab();
-  }
-}
-function yieldToggleSnapshot(key){
-  const idx=yieldCurveSelected.indexOf(key);
-  if(idx>=0){
-    if(yieldCurveSelected.length<=1){ yieldSetMsg("Mantenha ao menos 1 curva selecionada."); return; }
-    yieldCurveSelected.splice(idx,1);
-    warRenderActiveTab();
-    return;
-  }
-  if(yieldCurveSelected.length>=3){ yieldSetMsg("Selecione no máximo 3 curvas."); return; }
-  yieldCurveSelected.push(key);
-  warRenderActiveTab();
-}
-function yieldCurveSvgHTML(snapshots){
-  const W=320, H=190, padL=28, padR=12, padT=12, padB=28;
-  const tenors=["2Y","5Y","10Y"];
-  const values=[];
-  snapshots.forEach(s=>(s.points||[]).forEach(p=>{ if(p && p.value!==null && !isNaN(Number(p.value))) values.push(Number(p.value)); }));
-  if(!values.length) return '<div class="yield-state">Sem dados suficientes para montar a curva.</div>';
-  let minY=Math.min(...values), maxY=Math.max(...values);
-  const pad=(maxY-minY)*0.18 || 0.25;
-  minY-=pad; maxY+=pad;
-  const plotW=W-padL-padR, plotH=H-padT-padB;
-  const X=i=>padL+(i/(tenors.length-1))*plotW;
-  const Y=v=>padT+(1-(v-minY)/(maxY-minY))*plotH;
-  const yTicks=[minY,(minY+maxY)/2,maxY];
-  const grid=yTicks.map(v=>{
-    const y=Y(v).toFixed(1);
-    return '<line class="yield-grid" x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'"/>'+ 
-           '<text class="yield-label" x="'+(padL-5)+'" y="'+(Number(y)+3)+'" text-anchor="end">'+yieldFmt(v)+'</text>';
-  }).join("");
-  const xLabels=tenors.map((t,i)=>'<text class="yield-label" x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle">'+t+'</text>').join("");
-  const lines=snapshots.map((s,si)=>{
-    const pts=tenors.map((t,i)=>{
-      const p=(s.points||[]).find(x=>x.tenor===t);
-      return p && p.value!==null && !isNaN(Number(p.value)) ? {x:X(i), y:Y(Number(p.value)), value:Number(p.value), tenor:t} : null;
-    });
-    const valid=pts.filter(Boolean);
-    if(valid.length<2) return "";
-    const d=valid.map((p,i)=>(i===0?"M":"L")+p.x.toFixed(1)+" "+p.y.toFixed(1)).join(" ");
-    const dots=valid.map(p=>'<circle class="yield-dot yield-dot-'+si+'" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.2"><title>'+s.label+' · '+p.tenor+' · '+yieldFmt(p.value)+'</title></circle>').join("");
-    return '<path class="yield-line yield-line-'+si+'" d="'+d+'"/>'+dots;
-  }).join("");
-  const legend=snapshots.map((s,si)=>{
-    const dates=(s.points||[]).map(p=>p.date).filter(Boolean).sort();
-    const ref=dates.length ? dates[dates.length-1] : s.targetDate;
-    return '<div class="yield-leg"><div class="yield-leg-left"><span class="yield-swatch yield-swatch-'+si+'"></span><span class="yield-leg-name">'+s.label+'</span></div><span class="yield-leg-date">ref. '+yieldDateBR(ref)+'</span></div>';
-  }).join("");
-  return ''+
-    '<div class="yield-chart">'+
-      '<svg class="yield-svg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet">'+
-        grid+
-        '<line class="yield-axis" x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'"/>'+xLabels+lines+
-      '</svg>'+
-    '</div>'+ 
-    '<div class="yield-legend">'+legend+'</div>';
-}
-function warRenderYieldCurve(section){
-  const card=document.createElement("div");
-  card.className="war-card official wide yield-card";
-  const desc=document.createElement("div");
-  desc.className="yield-desc";
-  desc.textContent=(section && section.desc) || "Compare a inclinação da curva nominal americana em diferentes datas.";
-  card.appendChild(desc);
-
-  const controls=document.createElement("div");
-  controls.className="yield-controls";
-  YIELD_CURVE_OPTIONS.forEach(opt=>{
-    const b=document.createElement("button");
-    b.type="button";
-    b.className="yield-btn"+(yieldCurveSelected.includes(opt.key)?" active":"");
-    b.textContent=opt.label;
-    b.addEventListener("click",()=>yieldToggleSnapshot(opt.key));
-    controls.appendChild(b);
-  });
-  card.appendChild(controls);
-
-  const msg=document.createElement("div");
-  msg.className="yield-msg";
-  msg.textContent=yieldCurveMsg;
-  card.appendChild(msg);
-
-  const body=document.createElement("div");
-  if(!yieldCurveData && !yieldCurveLoading){ yieldLoadCurve(); }
-  if(yieldCurveLoading || !yieldCurveData){
-    body.innerHTML='<div class="yield-state">Carregando curva FRED…</div>';
-  }else if(!yieldCurveData.ok){
-    body.innerHTML='<div class="yield-state">Curva FRED indisponível no momento.</div>';
-  }else{
-    body.innerHTML=yieldCurveSvgHTML(yieldSelectedSnapshots());
-  }
-  card.appendChild(body);
-
-  const foot=document.createElement("div");
-  foot.className="yield-foot";
-  foot.textContent="Fonte: FRED · DGS2, DGS5 e DGS10 · dado diário/EOD";
-  card.appendChild(foot);
-  return card;
-}
-
-
-function openCmeFedWatchPanel(){
-  const overlay=document.getElementById("cme-overlay");
-  const sheet=document.getElementById("cme-sheet");
-  if(overlay) overlay.classList.add("show");
-  if(sheet){
-    sheet.classList.add("show");
-    sheet.setAttribute("aria-hidden","false");
-  }
-}
-function closeCmeFedWatchPanel(){
-  const overlay=document.getElementById("cme-overlay");
-  const sheet=document.getElementById("cme-sheet");
-  if(overlay) overlay.classList.remove("show");
-  if(sheet){
-    sheet.classList.remove("show");
-    sheet.setAttribute("aria-hidden","true");
-  }
-}
-
 function warRenderCard(it){
   const card=document.createElement("div");
   card.className="war-card "+warToneClass(it.tone);
@@ -2082,18 +1838,7 @@ function warRenderTable(section){
     card.appendChild(row);
   });
   if(section.foot){
-    const foot=document.createElement("div");
-    foot.className="war-tfoot" + (section.action==="cmeFedWatch" ? " action" : "");
-    foot.textContent=section.foot;
-    if(section.action==="cmeFedWatch"){
-      foot.setAttribute("role","button");
-      foot.setAttribute("tabindex","0");
-      foot.setAttribute("title","Abrir painel CME FedWatch");
-      foot.addEventListener("click", openCmeFedWatchPanel);
-      foot.addEventListener("keydown",e=>{
-        if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openCmeFedWatchPanel(); }
-      });
-    }
+    const foot=document.createElement("div"); foot.className="war-tfoot"; foot.textContent=section.foot;
     card.appendChild(foot);
   }
   return card;
@@ -2125,6 +1870,104 @@ function warRenderUsMarkets(section){
   return frag;
 }
 
+// ── Curva de Juros dos Treasuries (substitui o CME FedWatch) ──
+const YIELD_CURVE_ENDPOINT="https://tgp-market-quotes.jpauloct.workers.dev?yieldCurve=1";
+// cores fixas por momento (chip ativo = cor da linha = legenda)
+const YC_COLORS={ hoje:"#34d399", "1s":"#60a5fa", "1m":"#a78bfa", "3m":"#fb923c", "6m":"#f472b6", "1a":"#22d3ee" };
+const YC_DEFAULT=["hoje","3m","1a"];   // padrão ao abrir
+const YC_MAX=3;                          // máximo de curvas simultâneas
+let ycData=null;                         // dados do Worker (cacheados na sessão)
+let ycSelected=YC_DEFAULT.slice();       // momentos ativos
+
+function warRenderYieldCurve(section){
+  const wrap=document.createElement("div");
+  wrap.className="war-card official wide yc-card";
+  wrap.innerHTML='<div class="yc-state">Carregando curva…</div>';
+  // dispara o fetch (uma vez por abertura; reusa se já tem)
+  if(ycData){ ycPaint(wrap, section); }
+  else{
+    fetch(YIELD_CURVE_ENDPOINT, { cache:"no-store" })
+      .then(r=>r.json())
+      .then(d=>{ if(!d||!d.ok||!d.curves) throw new Error("sem dados"); ycData=d; ycPaint(wrap, section); })
+      .catch(()=>{ wrap.innerHTML='<div class="yc-state">Não foi possível carregar a curva agora.</div>'; });
+  }
+  return wrap;
+}
+
+// desenha os chips + o gráfico dentro do card
+function ycPaint(wrap, section){
+  const d=ycData;
+  // chips (botão = legenda, na cor da linha)
+  let chips='<div class="yc-chips">';
+  d.moments.forEach(m=>{
+    const on=ycSelected.includes(m.key);
+    const col=YC_COLORS[m.key]||"#888";
+    chips += '<button type="button" class="yc-chip'+(on?" on":"")+'" data-key="'+m.key+'" '+
+      'style="'+(on?("background:"+col+";border-color:"+col+";color:#06251a"):("color:"+col+";border-color:"+col))+'">'+
+      m.label+'</button>';
+  });
+  chips+='</div>';
+  const foot=section.foot?('<div class="yc-foot">'+section.foot+'</div>'):"";
+  wrap.innerHTML=chips+'<div class="yc-plot-wrap">'+ycSvg(d)+'</div>'+foot;
+  // liga os chips
+  wrap.querySelectorAll(".yc-chip").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const k=btn.dataset.key;
+      const i=ycSelected.indexOf(k);
+      if(i>=0){ ycSelected.splice(i,1); }       // desmarca
+      else{
+        ycSelected.push(k);
+        if(ycSelected.length>YC_MAX) ycSelected.shift(); // tira o mais antigo
+      }
+      ycPaint(wrap, section);
+    });
+  });
+}
+
+// monta o SVG da curva (até 3 momentos sobrepostos, 8 vértices)
+function ycSvg(d){
+  const verts=d.vertices, n=verts.length;
+  const sel=ycSelected.filter(k=>d.curves[k]); // só os que têm dados
+  // coleta todos os valores visíveis p/ escala Y
+  let vals=[];
+  sel.forEach(k=> d.curves[k].points.forEach(v=>{ if(v!=null) vals.push(v); }));
+  if(!vals.length){ return '<div class="yc-state">Selecione ao menos um período.</div>'; }
+  const minY=Math.min(...vals), maxY=Math.max(...vals);
+  const pad=(maxY-minY)*0.15||0.1;
+  const lo=minY-pad, hi=maxY+pad, range=(hi-lo)||1;
+
+  const W=320, H=190, padL=30, padR=10, padT=12, padB=26;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const X=i=> padL + (i/(n-1))*plotW;          // vértices equidistantes
+  const Y=v=> padT + (1-(v-lo)/range)*plotH;
+
+  // grade Y (3 linhas) + rótulos
+  let grid="";
+  for(let g=0; g<=2; g++){
+    const val=lo+ (range*g/2);
+    const yy=Y(val);
+    grid += '<line class="yc-grid" x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+yy.toFixed(1)+'"/>'+
+      '<text class="yc-axis-lbl" x="'+(padL-4)+'" y="'+(yy+3).toFixed(1)+'" text-anchor="end">'+val.toFixed(1).replace(".",",")+'</text>';
+  }
+  // rótulos X (vértices)
+  let xlabels="";
+  verts.forEach((v,i)=>{ xlabels += '<text class="yc-axis-lbl" x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle">'+v+'</text>'; });
+
+  // linhas de cada momento selecionado
+  let lines="";
+  sel.forEach(k=>{
+    const c=d.curves[k], col=YC_COLORS[k]||"#888";
+    let dd="";
+    c.points.forEach((v,i)=>{ if(v==null) return; dd += (dd===""?"M":"L")+X(i).toFixed(1)+" "+Y(v).toFixed(1)+" "; });
+    lines += '<path d="'+dd.trim()+'" fill="none" stroke="'+col+'" stroke-width="2"/>';
+    // bolinhas nos vértices
+    c.points.forEach((v,i)=>{ if(v==null) return; lines += '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.4" fill="'+col+'"/>'; });
+  });
+
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet">'+
+    grid+xlabels+lines+'</svg>';
+}
+
 function warRender(data){
   // aceita: warRender(data) → usa data.sections (Brasil, compat)
   //         warRender(sectionsArray) → renderiza a lista passada (usado nas abas)
@@ -2138,12 +1981,12 @@ function warRender(data){
     sec.appendChild(title);
     if(section.layout==="list"){
       sec.appendChild(warRenderListCard(section.items));
-    } else if(section.layout==="yield-curve"){
-      sec.appendChild(warRenderYieldCurve(section));
     } else if(section.layout==="table"){
       sec.appendChild(warRenderTable(section));
     } else if(section.layout==="us-markets"){
       sec.appendChild(warRenderUsMarkets(section));
+    } else if(section.layout==="yield-curve"){
+      sec.appendChild(warRenderYieldCurve(section));
     } else if(section.layout==="columns"){
       const cols=document.createElement("div"); cols.className="war-cols";
       section.columns.forEach(col=>{
@@ -2266,15 +2109,15 @@ function warUsMockSections(){
         ]},
       ],
     },
-    { title:"Curva de juros EUA", layout:"yield-curve",
-      desc:"Compare a curva nominal dos Treasuries em 2Y, 5Y e 10Y. Selecione até 3 datas." },
+    { title:"Curva de Juros", layout:"yield-curve",
+      foot:"Treasuries · fonte: FRED" },
     warFomcSection(),
   ];
 }
 
 // renderiza a aba ativa a partir do que está em warLastData
 // mescla seções: usa a real do Worker quando existir (por título); senão, a do mock.
-// preserva a ORDEM do mock (Panorama → Mercados → Curva de juros → FOMC).
+// preserva a ORDEM do mock (Panorama → Mercados → FedWatch → FOMC).
 function warMergeUsSections(){
   const mock = warUsMockSections();
   const real = (warLastData && warLastData.us && Array.isArray(warLastData.us.sections))
@@ -2360,10 +2203,6 @@ document.querySelectorAll(".war-tab").forEach(b=>{
 });
 document.getElementById("tv-chart-close").addEventListener("click", closeTradingViewChart);
 document.getElementById("fred-chart-close").addEventListener("click", closeFredChart);
-const cmeCloseBtn=document.getElementById("cme-close");
-const cmeOverlayEl=document.getElementById("cme-overlay");
-if(cmeCloseBtn) cmeCloseBtn.addEventListener("click", closeCmeFedWatchPanel);
-if(cmeOverlayEl) cmeOverlayEl.addEventListener("click", closeCmeFedWatchPanel);
 </script>
 </body>
 </html>
