@@ -932,14 +932,9 @@ async function fetchMarketQuotes(){
 // cor do arco quando o mercado está ABERTO.
 // Nesta etapa, só saopaulo usa cotação; os demais usam a cor padrão.
 function marketArcColor(m){
-  if(m.id !== "saopaulo") return "var(--accent)";
-  const q = marketQuotes[m.id];
-  if(!q || q.changePct === null || q.changePct === undefined) return "var(--mkt-unknown)";
-  const pct = Number(q.changePct);
-  if(!Number.isFinite(pct)) return "var(--mkt-unknown)";
-  if(pct >  0.05) return "var(--mkt-up)";
-  if(pct < -0.05) return "var(--mkt-down)";
-  return "var(--mkt-flat)";
+  // todos os mercados (inclusive o Bovespa) usam a cor padrão do arco aberto.
+  // (a antiga coloração por humor de mercado do Bovespa foi removida a pedido.)
+  return "var(--accent)";
 }
 
 let hourHand,secondHand;
