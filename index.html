@@ -979,16 +979,10 @@ async function fetchMarketQuotes(){
 }
 
 // cor do arco quando o mercado está ABERTO.
-// Nesta etapa, só saopaulo usa cotação; os demais usam a cor padrão.
+// O relógio comunica estado operacional: verde = aberto.
+// A variação/humor de mercado fica restrita à Tela de Guerra.
 function marketArcColor(m){
-  if(m.id !== "saopaulo") return "var(--accent)";
-  const q = marketQuotes[m.id];
-  if(!q || q.changePct === null || q.changePct === undefined) return "var(--mkt-unknown)";
-  const pct = Number(q.changePct);
-  if(!Number.isFinite(pct)) return "var(--mkt-unknown)";
-  if(pct >  0.05) return "var(--mkt-up)";
-  if(pct < -0.05) return "var(--mkt-down)";
-  return "var(--mkt-flat)";
+  return "var(--accent)";
 }
 
 let hourHand,secondHand;
@@ -1179,9 +1173,9 @@ toggleBtn.addEventListener("click",()=>{
   if(t.cls==="matrix") startRain(); else stopRain();
 });
 buildSettings(); rebuild(); refreshTzLabels(); update();
-// cotações: busca ao carregar e atualiza a cada 2 minutos (nunca dentro do update)
-fetchMarketQuotes();
-setInterval(fetchMarketQuotes, 120000);
+// Cotações do arco desativadas: o relógio agora usa apenas estado operacional.
+// Verde = mercado aberto; cinza = mercado fechado.
+// A Tela de Guerra continua buscando cotações pelo endpoint próprio.
 // selo visual discreto quando o modo debug está ativo
 if(_DEBUG_ACTIVE){
   const tag=document.createElement("div");
