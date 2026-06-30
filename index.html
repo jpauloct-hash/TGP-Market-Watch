@@ -115,7 +115,7 @@
   :root.matrix #rain { opacity: 1; }
   :root.matrix { background: #000 !important; }
   :root.matrix body { background: transparent !important; }
-  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#war-screen):not(#tv-chart-screen):not(#fred-chart-screen) { position: relative; z-index: 1; }
+  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#war-screen):not(#tv-chart-screen):not(#fred-chart-screen):not(#symbol-info-screen) { position: relative; z-index: 1; }
   .brand {
     width: min(92vw, 440px); display: flex; align-items: baseline; gap: 8px;
     padding: 0 4px 2px; user-select: none;
@@ -445,6 +445,7 @@
   /* reforço por ID: impede que a regra global body > * sobrescreva position/z-index */
   #tv-chart-screen { position: fixed; inset: 0; z-index: 120; }
   #fred-chart-screen { position: fixed; inset: 0; z-index: 121; }
+  #symbol-info-screen { position: fixed; inset: 0; z-index: 122; }
   /* gráfico FRED em SVG */
   .fred-plot { width: 100%; padding: 8px 4px 0; box-sizing: border-box; }
   .fred-head-val { font-size: 22px; font-weight: 800; color: var(--txt); padding: 4px 12px 2px; }
@@ -623,6 +624,17 @@
       <button id="fred-chart-close" class="tv-chart-close" type="button">&#10005;</button>
     </div>
     <div id="fred-chart-container" class="tv-chart-container"></div>
+  </div>
+
+  <div id="symbol-info-screen" class="tv-chart-screen">
+    <div class="tv-chart-head">
+      <div>
+        <div id="symbol-info-title" class="tv-chart-title">DETALHES</div>
+        <div id="symbol-info-subtitle" class="tv-chart-subtitle">TradingView</div>
+      </div>
+      <button id="symbol-info-close" class="tv-chart-close" type="button">&#10005;</button>
+    </div>
+    <div id="symbol-info-container" class="tv-chart-container"></div>
   </div>
 <script>
 const SVGNS="http://www.w3.org/2000/svg";
@@ -1562,6 +1574,62 @@ function closeTradingViewChart(){
   if (container) container.innerHTML = "";
 }
 
+// ── Symbol Info (widget oficial TradingView) — TESTE: só IBOV ──
+const TV_SYMBOL_INFO = {
+  IBOV: { title: "IBOVESPA", subtitle: "BMFBOVESPA:IBOV", symbol: "BMFBOVESPA:IBOV" }
+};
+
+function closeSymbolInfo(){
+  const screen = document.getElementById("symbol-info-screen");
+  const container = document.getElementById("symbol-info-container");
+  if (screen) screen.classList.remove("show");
+  if (container) container.innerHTML = "";
+}
+
+function openSymbolInfo(key){
+  const info = TV_SYMBOL_INFO[key];
+  const screen = document.getElementById("symbol-info-screen");
+  const container = document.getElementById("symbol-info-container");
+  const titleEl = document.getElementById("symbol-info-title");
+  const subEl = document.getElementById("symbol-info-subtitle");
+  if(!info || !screen || !container) return;
+
+  if(titleEl) titleEl.textContent = info.title;
+  if(subEl) subEl.textContent = info.subtitle;
+  screen.classList.add("show");
+  container.innerHTML = '<div class="fred-state">Carregando…</div>';
+
+  try{
+    // monta o widget oficial Symbol Info (script embed-widget-symbol-info.js)
+    container.innerHTML = "";
+    const wrapper = document.createElement("div");
+    wrapper.className = "tradingview-widget-container";
+    const widgetDiv = document.createElement("div");
+    widgetDiv.className = "tradingview-widget-container__widget";
+    wrapper.appendChild(widgetDiv);
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.async = true;
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js";
+    script.innerHTML = JSON.stringify({
+      symbol: info.symbol,
+      width: "100%",
+      locale: "br",
+      colorTheme: "dark",
+      isTransparent: true
+    });
+    // fallback: se o script falhar, mostra mensagem amigável
+    script.onerror = function(){
+      container.innerHTML = '<div class="fred-state">Não foi possível carregar os detalhes agora.</div>';
+    };
+    wrapper.appendChild(script);
+    container.appendChild(wrapper);
+  }catch(e){
+    container.innerHTML = '<div class="fred-state">Não foi possível carregar os detalhes agora.</div>';
+  }
+}
+
 // ── Gráfico FRED (interno, SVG, sem TradingView) ──
 const FRED_CHART_ENDPOINT="https://tgp-market-quotes.jpauloct.workers.dev?fredChart=";
 const FRED_PERIODS=[
@@ -1755,6 +1823,18 @@ function warRenderCard(it){
       if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openFredChart('DGS10','1y'); }
     });
   }
+  // TESTE: o card IBOV abre a tela Symbol Info (TradingView), não o gráfico.
+  if(String(it.label).trim()==="IBOV" && TV_SYMBOL_INFO["IBOV"]){
+    card.classList.add("tv-clickable");
+    card.setAttribute("role","button");
+    card.setAttribute("tabindex","0");
+    card.setAttribute("title","Abrir detalhes (TradingView)");
+    card.setAttribute("onclick","openSymbolInfo('IBOV')");
+    card.addEventListener("keydown",e=>{
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openSymbolInfo('IBOV'); }
+    });
+    // segue a montagem normal do card abaixo (não duplica)
+  } else {
   const chartKey=tgpWarChartKey(it.label);
   if(chartKey){
     card.classList.add("tv-clickable");
@@ -1765,6 +1845,7 @@ function warRenderCard(it){
     card.addEventListener("keydown",e=>{
       if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openTradingViewChart(chartKey); }
     });
+  }
   }
   const lbl=document.createElement("div"); lbl.className="war-card-label"; lbl.textContent=it.label;
   const val=document.createElement("div"); val.className="war-card-value"; val.textContent=it.value;
@@ -2198,6 +2279,7 @@ document.querySelectorAll(".war-tab").forEach(b=>{
 });
 document.getElementById("tv-chart-close").addEventListener("click", closeTradingViewChart);
 document.getElementById("fred-chart-close").addEventListener("click", closeFredChart);
+document.getElementById("symbol-info-close").addEventListener("click", closeSymbolInfo);
 </script>
 </body>
 </html>
