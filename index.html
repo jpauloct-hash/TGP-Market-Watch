@@ -115,7 +115,7 @@
   :root.matrix #rain { opacity: 1; }
   :root.matrix { background: #000 !important; }
   :root.matrix body { background: transparent !important; }
-  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#war-screen):not(#tv-chart-screen):not(#fred-chart-screen) { position: relative; z-index: 1; }
+  body > *:not(#rain):not(#sheet):not(#overlay):not(#news-sheet):not(#news-overlay):not(#cme-sheet):not(#cme-overlay):not(#war-screen):not(#tv-chart-screen):not(#fred-chart-screen) { position: relative; z-index: 1; }
   .brand {
     width: min(92vw, 440px); display: flex; align-items: baseline; gap: 8px;
     padding: 0 4px 2px; user-select: none;
@@ -513,6 +513,42 @@
     color: var(--accent);
     opacity: 0.75;
   }
+  .war-card.cme-clickable {
+    cursor: pointer;
+    position: relative;
+  }
+  .war-card.cme-clickable:active { transform: scale(0.985); }
+  .war-card.cme-clickable::after {
+    content: "OFICIAL";
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    opacity: 0.78;
+  }
+  /* painel interno de encaminhamento para CME FedWatch (sem iframe/scraping) */
+  #cme-overlay { position: fixed; inset: 0; z-index: 130; }
+  #cme-sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 131;
+    max-width: 480px; margin: 0 auto;
+    background: var(--panel); border-radius: 20px 20px 0 0;
+    padding: 22px 20px calc(env(safe-area-inset-bottom) + 20px);
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(.3,.8,.3,1);
+    border: 1px solid var(--card-line);
+  }
+  #cme-sheet.show { transform: translateY(0); }
+  .cme-card {
+    background: var(--card); border: 1px solid var(--card-line); border-left: 3px solid var(--accent);
+    border-radius: 13px; padding: 14px; margin: 12px 0;
+  }
+  .cme-card-title { font-size: 13px; font-weight: 800; color: var(--txt); margin-bottom: 6px; }
+  .cme-card-text { font-size: 12px; line-height: 1.6; color: var(--txt-dim); }
+  .cme-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .cme-link { display: block; text-align: center; text-decoration: none; margin-top: 0; }
 
 
 </style>
@@ -573,6 +609,24 @@
     <div id="news-status"></div>
     <div id="news-list"></div>
     <button class="done-btn" id="news-done-btn">Pronto</button>
+  </div>
+  <div class="overlay" id="cme-overlay"></div>
+  <div class="sheet" id="cme-sheet" aria-hidden="true">
+    <div class="grip"></div>
+    <h2>CME FedWatch</h2>
+    <div class="sub">Encaminhamento para a ferramenta oficial do CME Group.</div>
+    <div class="cme-card">
+      <div class="cme-card-title">Probabilidades da próxima reunião do FOMC</div>
+      <div class="cme-card-text">
+        Acompanhe as probabilidades implícitas via Fed Funds Futures diretamente na publicação oficial CME FedWatch.
+        O TGP Market Clock não reproduz, copia ou armazena os dados do CME.
+      </div>
+    </div>
+    <div class="cme-card-text">Fonte: CME FedWatch · CME Group</div>
+    <div class="cme-actions">
+      <a class="done-btn cme-link" id="cme-official-link" href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener noreferrer">Abrir ferramenta oficial</a>
+      <button class="btn" id="cme-close" type="button">Fechar</button>
+    </div>
   </div>
   <div class="war-screen" id="war-screen">
     <div class="war-head">
@@ -1735,9 +1789,39 @@ function fredAttachCrosshair(){
 }
 
 
+function openCmeFedWatchPanel(){
+  const overlay=document.getElementById("cme-overlay");
+  const sheet=document.getElementById("cme-sheet");
+  if(overlay) overlay.classList.add("show");
+  if(sheet){
+    sheet.classList.add("show");
+    sheet.setAttribute("aria-hidden","false");
+  }
+}
+function closeCmeFedWatchPanel(){
+  const overlay=document.getElementById("cme-overlay");
+  const sheet=document.getElementById("cme-sheet");
+  if(overlay) overlay.classList.remove("show");
+  if(sheet){
+    sheet.classList.remove("show");
+    sheet.setAttribute("aria-hidden","true");
+  }
+}
+
 function warRenderCard(it){
   const card=document.createElement("div");
   card.className="war-card "+warToneClass(it.tone);
+  // Card de encaminhamento oficial para CME FedWatch (sem iframe/scraping/dados copiados)
+  if(it && it.action==="cmeFedWatch"){
+    card.classList.add("cme-clickable");
+    card.setAttribute("role","button");
+    card.setAttribute("tabindex","0");
+    card.setAttribute("title","Abrir painel CME FedWatch");
+    card.addEventListener("click", openCmeFedWatchPanel);
+    card.addEventListener("keydown",e=>{
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); openCmeFedWatchPanel(); }
+    });
+  }
   // TESTE: só o card US10Y abre o gráfico interno do FRED (não TradingView)
   if(String(it.label).trim()==="US10Y"){
     card.classList.add("tv-clickable");
@@ -1998,13 +2082,10 @@ function warUsMockSections(){
         ]},
       ],
     },
-    { title:"CME FedWatch", layout:"table",
-      columns:["atual","dia ant.","sem. ant."],
-      rows:[
-        { label:"3,50–3,75", values:["69,0%","69,0%","57,9%"] },
-        { label:"3,75–4,00", values:["31,0%","31,0%","42,1%"] },
-      ],
-      foot:"probabilidades implícitas · próxima reunião FOMC (mock)" },
+    { title:"CME FedWatch", layout:"cards", cols:1, items:[
+      { label:"Probabilidades FOMC", value:"Abrir ferramenta oficial", tone:"official",
+        sub:"Fonte: CME FedWatch", action:"cmeFedWatch" },
+    ]},
     warFomcSection(),
   ];
 }
@@ -2097,6 +2178,8 @@ document.querySelectorAll(".war-tab").forEach(b=>{
 });
 document.getElementById("tv-chart-close").addEventListener("click", closeTradingViewChart);
 document.getElementById("fred-chart-close").addEventListener("click", closeFredChart);
+document.getElementById("cme-close").addEventListener("click", closeCmeFedWatchPanel);
+document.getElementById("cme-overlay").addEventListener("click", closeCmeFedWatchPanel);
 </script>
 </body>
 </html>
