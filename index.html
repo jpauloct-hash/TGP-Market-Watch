@@ -682,7 +682,7 @@ const ALL_MARKETS=[
   {id:"zurich",name:"ZURIQUE",index:"SMI",open:7,close:15.5,tz:"Europe/Zurich",calendar:"SIX"},
   {id:"london",name:"LONDRES",index:"FTSE 100",open:8,close:16.5,tz:"Europe/London",calendar:"LSE"},
   {id:"saopaulo",name:"S\u00c3O PAULO",index:"IBOVESPA",open:13,close:20,tz:"America/Sao_Paulo",calendar:"B3"},
-  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",open:14.5,close:21,tz:"America/New_York",calendar:"NYSE"},
+  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",openLocal:9.5,closeLocal:16,tz:"America/New_York",calendar:"NYSE"},
   {id:"toronto",name:"TORONTO",index:"TSX",open:14.5,close:21,tz:"America/Toronto",calendar:"TSX"},
   {id:"chicago",name:"CHICAGO",index:"S&P 500",open:14.5,close:21,tz:"America/Chicago",calendar:"CME"},
 ];
@@ -712,6 +712,45 @@ function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag);
   for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
 function toLocal(utcH){ return ((utcH+state.tzOffset)%24+24)%24; }
 function isOpenUTC(m,u){ let o=m.open,c=m.close; if(o<c) return u>=o&&u<c; return u>=o||u<c; }
+
+// ── Suporte a horário LOCAL da bolsa (acompanha horário de verão via Intl) ──
+// offset (em horas) do fuso `tz` no instante `now`, ex.: America/New_York em julho = -4
+function tzOffsetHoursAt(now, tz){
+  // compara a hora "de parede" no fuso com o horário UTC do mesmo instante
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, hour12:false,
+    year:"numeric", month:"2-digit", day:"2-digit",
+    hour:"2-digit", minute:"2-digit", second:"2-digit"
+  }).formatToParts(now);
+  const g = (t)=> Number(parts.find(p=>p.type===t).value);
+  let hh = g("hour"); if(hh===24) hh=0;
+  // instante "de parede" da bolsa, interpretado como se fosse UTC
+  const asUTC = Date.UTC(g("year"), g("month")-1, g("day"), hh, g("minute"), g("second"));
+  // diferença entre a parede da bolsa e o UTC real = offset do fuso
+  return Math.round((asUTC - now.getTime())/3600000 * 100)/100;
+}
+// hora local decimal da bolsa (0..24), ex.: 9.5 = 09:30
+function marketLocalHour(now, tz){
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, hour12:false, hour:"2-digit", minute:"2-digit", second:"2-digit"
+  }).formatToParts(now);
+  const g = (t)=> Number(parts.find(p=>p.type===t).value);
+  let hh = g("hour"); if(hh===24) hh=0;
+  return hh + g("minute")/60 + g("second")/3600;
+}
+// aberto/fechado usando horário LOCAL da bolsa (openLocal/closeLocal)
+function isOpenLocal(m, localH){
+  let o=m.openLocal, c=m.closeLocal;
+  if(o<c) return localH>=o && localH<c;
+  return localH>=o || localH<c;
+}
+// converte um horário LOCAL da bolsa (ex.: 9.5) → hora no relógio do usuário,
+// passando por UTC com o offset dinâmico da bolsa (resolve o DST).
+function marketOpenCloseToUser(m, localHour, now){
+  const off = tzOffsetHoursAt(now, m.tz);   // offset da bolsa agora (ex.: -4 no verão)
+  const utcH = localHour - off;              // hora local → UTC
+  return toLocal(((utcH % 24) + 24) % 24);   // UTC → relógio do usuário
+}
 
 // ===== Calendário de bolsas (fim de semana local + feriados) =====
 // As listas "closed" estão VAZIAS de propósito. Preencha com as datas reais
@@ -915,6 +954,11 @@ function isMarketHoliday(m, now){
 function isOpenNow(m, now){
   if(m.tz && isMarketWeekend(now, m.tz)) return false;
   if(isMarketHoliday(m, now)) return false;
+  // novo: horário LOCAL da bolsa (acompanha DST) quando openLocal/closeLocal existem
+  if(m.openLocal !== undefined && m.closeLocal !== undefined && m.tz){
+    return isOpenLocal(m, marketLocalHour(now, m.tz));
+  }
+  // fallback antigo: horário fixo em UTC
   const utcH = now.getUTCHours() + now.getUTCMinutes()/60 + now.getUTCSeconds()/3600;
   return isOpenUTC(m, utcH);
 }
@@ -968,9 +1012,18 @@ function rebuild(){
   const n=sel.length;
   const rOuter=168,rInner=Math.max(70,168-(n-1)*(n>8?12:16));
   const step=n>1?(rOuter-rInner)/(n-1):0;
+  const nowArc=getNow(); // instante atual (respeita DEBUG_NOW) para horários locais com DST
   sel.forEach((m,i)=>{
     const radius=n>1?rOuter-i*step:130;
-    const lo=toLocal(m.open),lc=toLocal(m.close);
+    // arco: usa horário LOCAL da bolsa (acompanha DST) se openLocal/closeLocal existem;
+    // senão, mantém o comportamento antigo (open/close fixos em UTC).
+    let lo, lc;
+    if(m.openLocal !== undefined && m.closeLocal !== undefined && m.tz){
+      lo=marketOpenCloseToUser(m, m.openLocal, nowArc);
+      lc=marketOpenCloseToUser(m, m.closeLocal, nowArc);
+    } else {
+      lo=toLocal(m.open); lc=toLocal(m.close);
+    }
     svg.appendChild(el("path",{d:arcPath(CX,CY,radius,0.01,23.99),fill:"none",
       stroke:"var(--ring-track)","stroke-width":ARC_W,"stroke-linecap":"butt"}));
     svg.appendChild(el("path",{d:arcPath(CX,CY,radius,lo,lc),fill:"none",
