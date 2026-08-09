@@ -331,6 +331,19 @@
   .war-list-rowtop { display: flex; justify-content: space-between; align-items: baseline; }
   .war-copom-extra { font-size: 9.5px; color: var(--txt-dim); opacity: 0.8; font-style: italic;
     padding: 1px 0 2px; }
+  /* link da ata do COPOM (preserva tipografia do extra; só vira clicável) */
+  .ata-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  /* destaque "ata nova": amarelo piscando (blink tradicional) por 3 dias */
+  .ata-blink { color: var(--mkt-flat); font-style: italic; text-decoration: underline;
+    animation: ataBlink 0.9s step-start infinite; }
+  @keyframes ataBlink {
+    0%, 49% { visibility: visible; }
+    50%, 100% { visibility: hidden; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    /* sem piscar: mantém amarelo estático enquanto for nova */
+    .ata-blink { animation: none; visibility: visible; }
+  }
   /* tabela Focus (indicador × ano) com cara de card */
   .war-table { padding: 12px 14px; }
   .war-trow { display: grid; grid-template-columns: minmax(58px, 1.2fr) repeat(2, minmax(54px, 1fr));
@@ -1928,7 +1941,19 @@ function warRenderListCard(items){
       const nm=document.createElement("div"); nm.className="war-list-name"; nm.textContent=it.name;
       const v=document.createElement("div"); v.className="war-list-val"; v.textContent=it.val;
       top.appendChild(nm); top.appendChild(v);
-      const ex=document.createElement("div"); ex.className="war-copom-extra"; ex.textContent=it.extra;
+      const ex=document.createElement("div"); ex.className="war-copom-extra";
+      // se há link da ata, transforma o trecho "ata publicada em DD/MM" num <a>
+      const idx = it.ataUrl ? it.extra.indexOf("ata publicada em ") : -1;
+      if(idx >= 0){
+        ex.appendChild(document.createTextNode(it.extra.slice(0, idx)));
+        const a=document.createElement("a");
+        a.className="ata-link" + (it.ataNova ? " ata-blink" : "");
+        a.href=it.ataUrl; a.target="_blank"; a.rel="noopener";
+        a.textContent=it.extra.slice(idx); // "ata publicada em DD/MM"
+        ex.appendChild(a);
+      } else {
+        ex.textContent=it.extra;
+      }
       row.appendChild(top); row.appendChild(ex);
     } else {
       const left=document.createElement("div");
