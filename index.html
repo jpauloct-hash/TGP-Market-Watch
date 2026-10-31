@@ -350,6 +350,11 @@
     gap: 6px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--card-line); }
   /* variante com 3 colunas de dados (ex.: CME FedWatch: rótulo + atual/ontem/semana) */
   .war-table.cols3 .war-trow { grid-template-columns: minmax(64px, 1.1fr) repeat(3, minmax(42px, 1fr)); }
+  /* variante com 4 colunas de dados (Focus: rótulo + 4 anos) */
+  .war-table.cols4 .war-trow { grid-template-columns: minmax(52px, 1fr) repeat(4, minmax(38px, 1fr)); gap: 4px; }
+  .war-table.cols4 .war-tcell { font-size: 11.5px; }
+  .war-table.cols4 .war-tyear { font-size: 9px; letter-spacing: 0.02em; }
+  .war-table.cols4 .war-tlabel { font-size: 11px; }
   .war-trow:last-of-type { border-bottom: none; }
   .war-thead { border-bottom: 1px solid var(--card-line); padding-bottom: 8px; }
   .war-tlabel { font-size: 12px; font-weight: 600; color: var(--txt); min-width: 0; }
@@ -1972,7 +1977,7 @@ function warRenderListCard(items){
 function warRenderTable(section){
   const card=document.createElement("div");
   const nCols=(section.columns||[]).length;
-  card.className="war-card official wide war-table"+(nCols>=3?" cols3":"");
+  card.className="war-card official wide war-table"+(nCols>=4?" cols4":(nCols===3?" cols3":""));
   const head=document.createElement("div"); head.className="war-trow war-thead";
   const corner=document.createElement("div"); corner.className="war-tlabel"; corner.textContent="";
   head.appendChild(corner);
