@@ -331,6 +331,18 @@
   .war-list-rowtop { display: flex; justify-content: space-between; align-items: baseline; }
   .war-copom-extra { font-size: 9.5px; color: var(--txt-dim); opacity: 0.8; font-style: italic;
     padding: 1px 0 2px; }
+  /* link da ata do COPOM (preserva tipografia do extra; só vira clicável) */
+  .ata-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  /* destaque "ata nova": amarelo piscando (blink tradicional) por 3 dias */
+  .ata-blink { color: var(--mkt-flat); font-style: italic; text-decoration: underline;
+    animation: ataBlink 0.9s step-start infinite; }
+  @keyframes ataBlink {
+    0%, 49% { visibility: visible; }
+    50%, 100% { visibility: hidden; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ata-blink { animation: none; visibility: visible; }
+  }
   /* tabela Focus (indicador × ano) com cara de card */
   .war-table { padding: 12px 14px; }
   .war-trow { display: grid; grid-template-columns: minmax(58px, 1.2fr) repeat(2, minmax(54px, 1fr));
@@ -687,7 +699,7 @@ const ALL_MARKETS=[
   {id:"zurich",name:"ZURIQUE",index:"SMI",open:7,close:15.5,tz:"Europe/Zurich",calendar:"SIX"},
   {id:"london",name:"LONDRES",index:"FTSE 100",open:8,close:16.5,tz:"Europe/London",calendar:"LSE"},
   {id:"saopaulo",name:"S\u00c3O PAULO",index:"IBOVESPA",open:13,close:20,tz:"America/Sao_Paulo",calendar:"B3"},
-  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",open:14.5,close:21,tz:"America/New_York",calendar:"NYSE"},
+  {id:"newyork",name:"NOVA YORK",index:"DOW JONES",openLocal:9.5,closeLocal:16,tz:"America/New_York",calendar:"NYSE"},
   {id:"toronto",name:"TORONTO",index:"TSX",open:14.5,close:21,tz:"America/Toronto",calendar:"TSX"},
   {id:"chicago",name:"CHICAGO",index:"S&P 500",open:14.5,close:21,tz:"America/Chicago",calendar:"CME"},
 ];
@@ -717,6 +729,42 @@ function el(tag,attrs){ const e=document.createElementNS(SVGNS,tag);
   for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
 function toLocal(utcH){ return ((utcH+state.tzOffset)%24+24)%24; }
 function isOpenUTC(m,u){ let o=m.open,c=m.close; if(o<c) return u>=o&&u<c; return u>=o||u<c; }
+
+// ── Suporte a horário LOCAL da bolsa (acompanha horário de verão via Intl) ──
+// offset (em horas) do fuso `tz` no instante `now`, ex.: America/New_York em julho = -4
+function tzOffsetHoursAt(now, tz){
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, hour12:false,
+    year:"numeric", month:"2-digit", day:"2-digit",
+    hour:"2-digit", minute:"2-digit", second:"2-digit"
+  }).formatToParts(now);
+  const g = (t)=> Number(parts.find(p=>p.type===t).value);
+  let hh = g("hour"); if(hh===24) hh=0;
+  const asUTC = Date.UTC(g("year"), g("month")-1, g("day"), hh, g("minute"), g("second"));
+  return Math.round((asUTC - now.getTime())/3600000 * 100)/100;
+}
+// hora local decimal da bolsa (0..24), ex.: 9.5 = 09:30
+function marketLocalHour(now, tz){
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, hour12:false, hour:"2-digit", minute:"2-digit", second:"2-digit"
+  }).formatToParts(now);
+  const g = (t)=> Number(parts.find(p=>p.type===t).value);
+  let hh = g("hour"); if(hh===24) hh=0;
+  return hh + g("minute")/60 + g("second")/3600;
+}
+// aberto/fechado usando horário LOCAL da bolsa (openLocal/closeLocal)
+function isOpenLocal(m, localH){
+  let o=m.openLocal, c=m.closeLocal;
+  if(o<c) return localH>=o && localH<c;
+  return localH>=o || localH<c;
+}
+// converte um horário LOCAL da bolsa (ex.: 9.5) → hora no relógio do usuário,
+// passando por UTC com o offset dinâmico da bolsa (resolve o DST).
+function marketOpenCloseToUser(m, localHour, now){
+  const off = tzOffsetHoursAt(now, m.tz);
+  const utcH = localHour - off;
+  return toLocal(((utcH % 24) + 24) % 24);
+}
 
 // ===== Calendário de bolsas (fim de semana local + feriados) =====
 // As listas "closed" estão VAZIAS de propósito. Preencha com as datas reais
@@ -920,6 +968,11 @@ function isMarketHoliday(m, now){
 function isOpenNow(m, now){
   if(m.tz && isMarketWeekend(now, m.tz)) return false;
   if(isMarketHoliday(m, now)) return false;
+  // novo: horário LOCAL da bolsa (acompanha DST) quando openLocal/closeLocal existem
+  if(m.openLocal !== undefined && m.closeLocal !== undefined && m.tz){
+    return isOpenLocal(m, marketLocalHour(now, m.tz));
+  }
+  // fallback antigo: horário fixo em UTC
   const utcH = now.getUTCHours() + now.getUTCMinutes()/60 + now.getUTCSeconds()/3600;
   return isOpenUTC(m, utcH);
 }
@@ -973,9 +1026,18 @@ function rebuild(){
   const n=sel.length;
   const rOuter=168,rInner=Math.max(70,168-(n-1)*(n>8?12:16));
   const step=n>1?(rOuter-rInner)/(n-1):0;
+  const nowArc=getNow(); // instante atual (respeita DEBUG_NOW) para horários locais com DST
   sel.forEach((m,i)=>{
     const radius=n>1?rOuter-i*step:130;
-    const lo=toLocal(m.open),lc=toLocal(m.close);
+    // arco: usa horário LOCAL da bolsa (acompanha DST) se openLocal/closeLocal existem;
+    // senão, mantém o comportamento antigo (open/close fixos em UTC).
+    let lo, lc;
+    if(m.openLocal !== undefined && m.closeLocal !== undefined && m.tz){
+      lo=marketOpenCloseToUser(m, m.openLocal, nowArc);
+      lc=marketOpenCloseToUser(m, m.closeLocal, nowArc);
+    } else {
+      lo=toLocal(m.open); lc=toLocal(m.close);
+    }
     svg.appendChild(el("path",{d:arcPath(CX,CY,radius,0.01,23.99),fill:"none",
       stroke:"var(--ring-track)","stroke-width":ARC_W,"stroke-linecap":"butt"}));
     svg.appendChild(el("path",{d:arcPath(CX,CY,radius,lo,lc),fill:"none",
@@ -1880,7 +1942,19 @@ function warRenderListCard(items){
       const nm=document.createElement("div"); nm.className="war-list-name"; nm.textContent=it.name;
       const v=document.createElement("div"); v.className="war-list-val"; v.textContent=it.val;
       top.appendChild(nm); top.appendChild(v);
-      const ex=document.createElement("div"); ex.className="war-copom-extra"; ex.textContent=it.extra;
+      const ex=document.createElement("div"); ex.className="war-copom-extra";
+      // se há link da ata, transforma o trecho "ata publicada em DD/MM" num <a> clicável
+      const idx = it.ataUrl ? it.extra.indexOf("ata publicada em ") : -1;
+      if(idx >= 0){
+        ex.appendChild(document.createTextNode(it.extra.slice(0, idx)));
+        const a=document.createElement("a");
+        a.className="ata-link" + (it.ataNova ? " ata-blink" : "");
+        a.href=it.ataUrl; a.target="_blank"; a.rel="noopener";
+        a.textContent=it.extra.slice(idx); // "ata publicada em DD/MM"
+        ex.appendChild(a);
+      } else {
+        ex.textContent=it.extra;
+      }
       row.appendChild(top); row.appendChild(ex);
     } else {
       const left=document.createElement("div");
